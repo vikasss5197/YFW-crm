@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yogi Flying World - Enterprise Travel CRM & ERP</title>
+  <title>Yogi Flying World - Enterprise Cloud Travel CRM</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts Inter & Outfit -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -57,15 +57,15 @@
       font-family: 'Outfit', sans-serif;
     }
     .glass-card {
-      background: rgba(14, 17, 30, 0.85);
+      background: rgba(14, 17, 30, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(140, 82, 202, 0.15);
+      border: 1px solid rgba(140, 82, 202, 0.18);
     }
     .glass-card-hover:hover {
       background: rgba(21, 26, 46, 0.95);
       border-color: rgba(243, 112, 33, 0.4);
-      box-shadow: 0 10px 25px -5px rgba(243, 112, 33, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(243, 112, 33, 0.12);
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -82,51 +82,151 @@
       background: #F37021;
     }
   </style>
+
+  <!-- Firebase Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Provided Production Firebase Config for Yogi Flying World
+    const firebaseConfig = {
+      apiKey: "AIzaSyCatznRYEyNCEPRB0Q_UGiHw78KqLOnFxU",
+      authDomain: "yfw-crm.firebaseapp.com",
+      projectId: "yfw-crm",
+      storageBucket: "yfw-crm.firebasestorage.app",
+      messagingSenderId: "738931414323",
+      appId: "1:738931414323:web:a45c18bed5adf71ae55a46",
+      measurementId: "G-3RCJG352V1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Global references for app integration
+    window.yfw_db = db;
+    window.yfw_docRef = doc(db, "artifacts", "yfw-crm", "public", "data", "main_state", "crm_data");
+
+    // Anonymous authentication for security rules compliance
+    signInAnonymously(auth).then(() => {
+      console.log("Firebase Auth Connected");
+      updateSyncStatus("connected");
+      setupRealtimeSync();
+    }).catch((err) => {
+      console.warn("Auth error, using local mode fallback:", err);
+      updateSyncStatus("local");
+    });
+
+    function setupRealtimeSync() {
+      // Listen to real-time updates across all devices
+      onSnapshot(window.yfw_docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const cloudData = docSnap.data();
+          if (cloudData.leads) window.leads = cloudData.leads;
+          if (cloudData.bookings) window.bookings = cloudData.bookings;
+          if (cloudData.suppliers) window.suppliers = cloudData.suppliers;
+          if (cloudData.vehicles) window.vehicles = cloudData.vehicles;
+
+          // Also keep local copy updated
+          localStorage.setItem('yfw_crm_leads', JSON.stringify(window.leads));
+          localStorage.setItem('yfw_crm_bookings', JSON.stringify(window.bookings));
+          localStorage.setItem('yfw_crm_suppliers', JSON.stringify(window.suppliers));
+          localStorage.setItem('yfw_crm_vehicles', JSON.stringify(window.vehicles));
+
+          window.refreshAllViews();
+          updateSyncStatus("connected");
+        } else {
+          // Initialize cloud data if empty
+          window.syncStateToCloud();
+        }
+      }, (error) => {
+        console.error("Firestore sync error:", error);
+        updateSyncStatus("error");
+      });
+    }
+
+    window.syncStateToCloud = async function() {
+      if (!window.yfw_db) return;
+      try {
+        updateSyncStatus("syncing");
+        await setDoc(window.yfw_docRef, {
+          leads: window.leads,
+          bookings: window.bookings,
+          suppliers: window.suppliers,
+          vehicles: window.vehicles,
+          lastUpdated: new Date().toISOString()
+        }, { merge: true });
+        updateSyncStatus("connected");
+      } catch (err) {
+        console.error("Error writing to cloud:", err);
+        updateSyncStatus("local");
+      }
+    };
+
+    function updateSyncStatus(status) {
+      const badge = document.getElementById('cloud-sync-badge');
+      const text = document.getElementById('cloud-sync-text');
+      const icon = document.getElementById('cloud-sync-icon');
+      if (!badge || !text || !icon) return;
+
+      if (status === "connected") {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold";
+        icon.className = "fa-solid fa-cloud text-emerald-400";
+        text.innerText = "Cloud Synced";
+      } else if (status === "syncing") {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yogi-orange/15 border border-yogi-orange/30 text-yogi-orange text-[11px] font-semibold";
+        icon.className = "fa-solid fa-arrows-rotate animate-spin text-yogi-orange";
+        text.innerText = "Syncing...";
+      } else {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-[11px] font-semibold";
+        icon.className = "fa-solid fa-hard-drive text-slate-400";
+        text.innerText = "Local Device";
+      }
+    }
+  </script>
 </head>
 
 <body class="min-h-screen flex flex-col antialiased selection:bg-yogi-orange selection:text-white">
-  <!-- Toast Message -->
+  <!-- Toast Notification -->
   <div id="toast" class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-dark-900 border border-yogi-orange/40 text-yogi-orangeLight shadow-2xl backdrop-blur-md transform translate-y-[-140%] opacity-0 transition-all duration-300 pointer-events-none">
     <i id="toast-icon" class="fa-solid fa-circle-check text-yogi-orange text-lg"></i>
     <span id="toast-msg" class="text-sm font-medium text-slate-100">Notification message</span>
   </div>
 
-  <!-- Header / Navigation Bar with Yogi Flying World Identity -->
+  <!-- Header / Navigation Bar -->
   <header class="sticky top-0 z-40 w-full glass-card border-b border-dark-700 bg-dark-950/95 backdrop-blur-xl">
     <div class="max-w-[1550px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <!-- Clean Single-Color / Minimal Typographic Brand Header -->
       <div class="flex items-center gap-3">
-        <!-- Logo Image or Pure Monogram Icon -->
-        <div id="brand-logo-container" class="relative group cursor-pointer" onclick="document.getElementById('logo-file-input').click()" title="ક્લિક કરીને તમારી ઓરિજિનલ લોગો ઇમેજ અપલોડ કરો">
-          <img id="custom-logo-img" src="" alt="Yogi Flying World" class="h-11 w-auto max-w-[140px] object-contain rounded-lg hidden">
-          <div id="default-brand-icon" class="h-11 w-11 rounded-xl bg-yogi-purple border border-yogi-purpleLight/40 flex items-center justify-center text-white shadow-lg shadow-yogi-purple/30">
-            <i class="fa-solid fa-plane-up text-lg text-yogi-orange"></i>
-          </div>
-          <!-- Tiny upload overlay badge on hover -->
-          <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-dark-900 border border-dark-700 text-slate-300 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition shadow">
-            <i class="fa-solid fa-camera text-[9px] text-yogi-orange"></i>
-          </div>
-          <input type="file" id="logo-file-input" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+        <div class="h-11 w-11 rounded-xl bg-yogi-purple border border-yogi-purpleLight/40 flex items-center justify-center text-white shadow-lg shadow-yogi-purple/30">
+          <i class="fa-solid fa-plane-up text-lg text-yogi-orange"></i>
         </div>
 
         <div>
           <div class="flex items-center gap-2">
-            <!-- Clean single-color high-end typography -->
             <h1 class="text-xl sm:text-2xl font-black brand-font tracking-wider text-white uppercase flex items-center gap-1.5">
               <span>YOGI FLYING WORLD</span>
             </h1>
             <span class="text-[10px] px-2 py-0.5 rounded-full bg-dark-800 text-yogi-orange border border-yogi-orange/30 font-bold uppercase tracking-wider">
-              CRM & OPS
+              CLOUD ERP
             </span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium tracking-wide">
-            Ahmedabad, Gujarat • Worldwide Holiday Tours & Flights ERP
+            Ahmedabad, Gujarat • Worldwide Holiday Tours & Flights
           </p>
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
-      <div class="flex items-center gap-2.5">
+      <!-- Cloud Sync & Quick Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Live Firebase Sync Indicator -->
+        <div id="cloud-sync-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-[11px] font-semibold">
+          <i id="cloud-sync-icon" class="fa-solid fa-cloud text-slate-400"></i>
+          <span id="cloud-sync-text">Connecting...</span>
+        </div>
+
         <button onclick="openLeadModal()" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-yogi-purple to-yogi-purpleHover hover:brightness-110 rounded-xl shadow-lg shadow-yogi-purple/30 border border-yogi-purpleLight/40 transition transform hover:scale-[1.02]">
           <i class="fa-solid fa-user-plus text-xs"></i>
           <span>નવી લીડ</span>
@@ -138,60 +238,51 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs: ALL 8 MODULES with Brand Violet/Orange accents -->
+    <!-- Navigation Tabs: ALL 8 MODULES -->
     <div class="max-w-[1550px] mx-auto px-4 sm:px-6 lg:px-8 border-t border-dark-700/80 overflow-x-auto custom-scrollbar">
       <nav class="flex space-x-1 py-2.5" id="navTabs">
-        <!-- 1. Dashboard -->
-        <button onclick="switchTab('dashboard')" class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all text-white bg-gradient-to-r from-yogi-purple/80 to-yogi-purpleDark border border-yogi-orange/40 shadow-sm flex items-center gap-1.5" data-tab="dashboard">
+        <button onclick="switchTab('dashboard')" class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all text-white bg-gradient-to-r from-yogi-purple to-yogi-purpleDark border border-yogi-orange/40 shadow-sm flex items-center gap-1.5" data-tab="dashboard">
           <i class="fa-solid fa-chart-pie text-yogi-orange"></i>
           <span>Overview</span>
         </button>
 
-        <!-- 2. Leads -->
         <button onclick="switchTab('leads')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="leads">
           <i class="fa-solid fa-user-group text-yogi-purpleLight"></i>
           <span>1. Leads & Inquiries</span>
           <span id="badge-leads-count" class="px-1.5 py-0.2 text-[10px] bg-dark-700 text-slate-300 rounded-full">0</span>
         </button>
 
-        <!-- 3. Quotation Generator -->
         <button onclick="switchTab('quotation')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="quotation">
           <i class="fa-solid fa-file-invoice-dollar text-yogi-orange"></i>
           <span>2. Quotations & Itinerary</span>
         </button>
 
-        <!-- 4. Bookings & Tours -->
         <button onclick="switchTab('bookings')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="bookings">
           <i class="fa-solid fa-suitcase-rolling text-indigo-400"></i>
           <span>3. Tours & Ops</span>
           <span id="badge-bookings-count" class="px-1.5 py-0.2 text-[10px] bg-dark-700 text-slate-300 rounded-full">0</span>
         </button>
 
-        <!-- 5. Accounts & Payments -->
         <button onclick="switchTab('accounts')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="accounts">
           <i class="fa-solid fa-indian-rupee-sign text-emerald-400"></i>
           <span>4. Accounts & Ledger</span>
         </button>
 
-        <!-- 6. Hotel & Suppliers -->
         <button onclick="switchTab('suppliers')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="suppliers">
           <i class="fa-solid fa-hotel text-sky-400"></i>
           <span>5. Hotels & B2B Suppliers</span>
         </button>
 
-        <!-- 7. Vehicles & Fleet -->
         <button onclick="switchTab('vehicles')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="vehicles">
           <i class="fa-solid fa-car text-amber-400"></i>
           <span>6. Fleet & Cabs</span>
         </button>
 
-        <!-- 8. WhatsApp Hub -->
         <button onclick="switchTab('whatsapp')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="whatsapp">
           <i class="fa-brands fa-whatsapp text-emerald-400"></i>
           <span>7. WhatsApp Hub</span>
         </button>
 
-        <!-- 9. P&L Financial Reports -->
         <button onclick="switchTab('reports')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="reports">
           <i class="fa-solid fa-chart-line text-rose-400"></i>
           <span>8. Profit & Loss</span>
@@ -285,7 +376,6 @@
 
       <!-- Quick Action Banner & Top Destinations -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Upcoming Travel Departures -->
         <div class="lg:col-span-2 glass-card rounded-2xl p-6">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -312,20 +402,19 @@
                 </tr>
               </thead>
               <tbody id="dashboard-upcoming-tbody" class="divide-y divide-dark-700/60 text-slate-300">
-                <!-- Dynamically Rendered -->
+                <!-- Rendered dynamically -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Destination Hotspots & Controls -->
         <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
           <div>
             <h2 class="text-base font-bold text-white flex items-center gap-2 mb-1">
               <i class="fa-solid fa-fire text-yogi-orange"></i>
-              Top Trending Destinations
+              Top Destinations
             </h2>
-            <p class="text-xs text-slate-400 mb-4">સૌથી વધુ ઈન્ક્વાયરી ધરાવતાં હોલિડે પેકેજીસ</p>
+            <p class="text-xs text-slate-400 mb-4">હોલિડે પેકેજીસ ઇન્ક્વાયરી</p>
             
             <div id="top-destinations-list" class="space-y-3">
               <!-- Dynamically populated -->
@@ -334,13 +423,13 @@
 
           <div class="mt-6 pt-5 border-t border-dark-700">
             <div class="flex items-center justify-between text-xs text-slate-400">
-              <span>Agency Data:</span>
+              <span>Database Tools:</span>
               <div class="flex gap-2">
-                <button onclick="exportDataJSON()" class="px-3 py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs transition border border-slate-700">
-                  <i class="fa-solid fa-download mr-1 text-yogi-orange"></i> Export Backup
+                <button onclick="window.syncStateToCloud()" class="px-3 py-1.5 rounded-lg bg-yogi-purple/30 border border-yogi-purpleLight/40 hover:bg-yogi-purple/50 text-slate-200 text-xs transition">
+                  <i class="fa-solid fa-cloud-arrow-up mr-1 text-yogi-orange"></i> Force Sync
                 </button>
-                <button onclick="resetDefaultData()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 border border-rose-500/20 hover:bg-rose-900/50 text-rose-300 text-xs transition">
-                  <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset
+                <button onclick="exportDataJSON()" class="px-3 py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs transition border border-slate-700">
+                  <i class="fa-solid fa-download mr-1"></i> Export
                 </button>
               </div>
             </div>
@@ -357,7 +446,7 @@
         <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" id="lead-search" oninput="renderLeads()" placeholder="Search by client name, destination, phone..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-yogi-orange">
+            <input type="text" id="lead-search" oninput="renderLeads()" placeholder="Search client name, destination, phone..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-yogi-orange">
           </div>
           <select id="lead-status-filter" onchange="renderLeads()" class="px-3 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 focus:outline-none focus:border-yogi-orange">
             <option value="ALL">All Statuses (બધા સ્ટેટસ)</option>
@@ -381,7 +470,7 @@
     </section>
 
     <!-- ============================================== -->
-    <!-- MODULE 2: QUOTATION GENERATOR (YOGI BRANDED) -->
+    <!-- MODULE 2: QUOTATION GENERATOR -->
     <!-- ============================================== -->
     <section id="tab-quotation" class="hidden space-y-6">
       <div class="glass-card p-6 rounded-2xl">
@@ -391,7 +480,7 @@
               <i class="fa-solid fa-file-invoice-dollar text-yogi-orange"></i>
               Yogi Flying World - Quotation & Itinerary Builder
             </h2>
-            <p class="text-xs text-slate-400">દિવસવાર પ્રવાસ કાર્યક્રમ, કોસ્ટિંગ બ્રેકડાઉન અને WhatsApp શેરિંગ</p>
+            <p class="text-xs text-slate-400">દિવસવાર પ્લાનિંગ, કોસ્ટિંગ બ્રેકડાઉન અને WhatsApp પ્રપોઝલ</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="loadSampleQuote()" class="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-xs text-slate-300 border border-dark-700">
@@ -404,9 +493,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-          <!-- Quotation Config Form -->
           <div class="lg:col-span-7 space-y-5">
-            <!-- Client & Trip Basics -->
             <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
               <h3 class="text-xs font-bold text-yogi-orange uppercase tracking-wider">1. Client & Travel Details</h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -429,7 +516,6 @@
               </div>
             </div>
 
-            <!-- Cost Breakdown Elements -->
             <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold text-yogi-purpleLight uppercase tracking-wider">2. Cost Components & Supplier Expenses</h3>
@@ -463,7 +549,6 @@
               </div>
             </div>
 
-            <!-- Day-wise Itinerary Inputs -->
             <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold text-yogi-orange uppercase tracking-wider">3. Day-wise Itinerary Builder</h3>
@@ -477,7 +562,6 @@
             </div>
           </div>
 
-          <!-- Quotation Preview & WhatsApp Export -->
           <div class="lg:col-span-5 flex flex-col justify-between glass-card p-5 rounded-2xl border border-dark-700">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -493,7 +577,7 @@
               <div class="grid grid-cols-2 gap-2">
                 <button onclick="copyToClipboard(document.getElementById('quote-formatted-text').value)" class="py-2 px-3 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 border border-dark-700 transition">
                   <i class="fa-regular fa-copy"></i>
-                  <span>કોપી ક્વોટ (Copy)</span>
+                  <span>કોપી કરો (Copy)</span>
                 </button>
                 <button onclick="sendQuoteWhatsApp()" class="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:brightness-110 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-700/30 transition">
                   <i class="fa-brands fa-whatsapp text-sm"></i>
@@ -605,7 +689,6 @@
         </button>
       </div>
 
-      <!-- Suppliers Grid -->
       <div id="suppliers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <!-- Rendered via JS -->
       </div>
@@ -629,7 +712,6 @@
         </button>
       </div>
 
-      <!-- Fleet Grid -->
       <div id="vehicles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Rendered via JS -->
       </div>
@@ -741,7 +823,6 @@
         </div>
       </div>
 
-      <!-- Per-Booking Profitability Ledger -->
       <div class="glass-card p-6 rounded-2xl">
         <div class="flex items-center justify-between mb-4">
           <div>
@@ -778,7 +859,7 @@
   </main>
 
   <!-- ============================================== -->
-  <!-- MODALS WITH REBRANDED ACCENTS -->
+  <!-- MODALS -->
   <!-- ============================================== -->
   <!-- MODAL: ADD / EDIT LEAD -->
   <div id="modal-lead" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
@@ -923,9 +1004,8 @@
           </div>
         </div>
 
-        <!-- Operations Checklist Statuses -->
         <div class="p-3 bg-dark-950/80 rounded-xl border border-dark-700 space-y-2">
-          <span class="block text-[11px] font-bold text-yogi-purpleLight uppercase tracking-wider">ઓપરેશન્સ સ્ટેટસ (Operations Status)</span>
+          <span class="block text-[11px] font-bold text-yogi-purpleLight uppercase tracking-wider">ઓપરેશન્સ સ્ટેટસ (Operations Checklist)</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div>
               <label class="block text-[10px] text-slate-400 mb-1">Flight Tickets</label>
@@ -964,7 +1044,6 @@
           </div>
         </div>
 
-        <!-- Financial Breakdown -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block font-semibold text-slate-300 mb-1">Total Package Cost (₹) *</label>
@@ -993,7 +1072,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD / EDIT SUPPLIER -->
+  <!-- MODAL: ADD SUPPLIER -->
   <div id="modal-supplier" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
     <div class="glass-card max-w-lg w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative">
       <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
@@ -1049,7 +1128,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD / EDIT VEHICLE -->
+  <!-- MODAL: ADD VEHICLE -->
   <div id="modal-vehicle" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
     <div class="glass-card max-w-lg w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative">
       <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
@@ -1118,16 +1197,16 @@
     </div>
   </div>
 
-  <!-- Footer with Yogi Flying World Brand Footprint -->
+  <!-- Footer -->
   <footer class="mt-auto border-t border-dark-700/60 py-4 text-center text-xs text-slate-500">
-    <p>© 2026 <b class="text-white">Yogi Flying World</b> — Enterprise Travel Agency CRM • Ahmedabad, Gujarat • All 8 Modules Operational</p>
+    <p>© 2026 <b class="text-white">Yogi Flying World</b> — Enterprise Cloud Travel CRM • Ahmedabad, Gujarat • All 8 Modules Operational</p>
   </footer>
 
   <!-- ============================================== -->
-  <!-- JAVASCRIPT STATE ENGINE & REBRANDED LOGIC -->
+  <!-- JAVASCRIPT STATE ENGINE & CONTROLLER -->
   <!-- ============================================== -->
   <script>
-    // --- Mock Initial Data Sets ---
+    // Initial Seed Data Sets
     const DEFAULT_LEADS = [
       {
         id: "YFW-LD-101",
@@ -1304,18 +1383,27 @@
       }
     ];
 
-    // --- State Storage in LocalStorage ---
-    let leads = JSON.parse(localStorage.getItem('yfw_crm_leads')) || DEFAULT_LEADS;
-    let bookings = JSON.parse(localStorage.getItem('yfw_crm_bookings')) || DEFAULT_BOOKINGS;
-    let suppliers = JSON.parse(localStorage.getItem('yfw_crm_suppliers')) || DEFAULT_SUPPLIERS;
-    let vehicles = JSON.parse(localStorage.getItem('yfw_crm_vehicles')) || DEFAULT_VEHICLES;
+    // Initialize global app memory
+    window.leads = JSON.parse(localStorage.getItem('yfw_crm_leads')) || DEFAULT_LEADS;
+    window.bookings = JSON.parse(localStorage.getItem('yfw_crm_bookings')) || DEFAULT_BOOKINGS;
+    window.suppliers = JSON.parse(localStorage.getItem('yfw_crm_suppliers')) || DEFAULT_SUPPLIERS;
+    window.vehicles = JSON.parse(localStorage.getItem('yfw_crm_vehicles')) || DEFAULT_VEHICLES;
 
     function saveState() {
-      localStorage.setItem('yfw_crm_leads', JSON.stringify(leads));
-      localStorage.setItem('yfw_crm_bookings', JSON.stringify(bookings));
-      localStorage.setItem('yfw_crm_suppliers', JSON.stringify(suppliers));
-      localStorage.setItem('yfw_crm_vehicles', JSON.stringify(vehicles));
+      localStorage.setItem('yfw_crm_leads', JSON.stringify(window.leads));
+      localStorage.setItem('yfw_crm_bookings', JSON.stringify(window.bookings));
+      localStorage.setItem('yfw_crm_suppliers', JSON.stringify(window.suppliers));
+      localStorage.setItem('yfw_crm_vehicles', JSON.stringify(window.vehicles));
 
+      refreshAllViews();
+
+      // Trigger Cloud Sync directly to Firestore
+      if (typeof window.syncStateToCloud === 'function') {
+        window.syncStateToCloud();
+      }
+    }
+
+    window.refreshAllViews = function() {
       renderDashboard();
       renderLeads();
       renderBookings();
@@ -1324,9 +1412,8 @@
       renderVehicles();
       renderReports();
       populateWhatsAppDropdown();
-    }
+    };
 
-    // --- Tab Switching with Rebranded Accents ---
     function switchTab(tabId) {
       const allTabs = ['dashboard', 'leads', 'quotation', 'bookings', 'accounts', 'suppliers', 'vehicles', 'whatsapp', 'reports'];
       allTabs.forEach(t => {
@@ -1346,7 +1433,6 @@
       });
     }
 
-    // --- Toast Notifications ---
     function showToast(message, isError = false) {
       const toast = document.getElementById('toast');
       const msg = document.getElementById('toast-msg');
@@ -1398,18 +1484,18 @@
       showToast("મેસેજ ક્લિપબોર્ડ પર કોપી થઈ ગયો!");
     }
 
-    // --- Render: Dashboard ---
+    // --- Render Functions ---
     function renderDashboard() {
-      const totalBookingsCount = bookings.length;
-      const activeLeadsCount = leads.filter(l => l.status !== 'Lost' && l.status !== 'Confirmed').length;
-      const wonLeadsCount = leads.filter(l => l.status === 'Confirmed').length;
-      const conversionRate = leads.length > 0 ? Math.round((wonLeadsCount / leads.length) * 100) : 0;
+      const totalBookingsCount = window.bookings.length;
+      const activeLeadsCount = window.leads.filter(l => l.status !== 'Lost' && l.status !== 'Confirmed').length;
+      const wonLeadsCount = window.leads.filter(l => l.status === 'Confirmed').length;
+      const conversionRate = window.leads.length > 0 ? Math.round((wonLeadsCount / window.leads.length) * 100) : 0;
 
       let totalGross = 0;
       let totalCost = 0;
       let totalAdvance = 0;
 
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         totalGross += Number(b.totalCost || 0);
         totalCost += Number(b.supplierCost || 0);
         totalAdvance += Number(b.advancePaid || 0);
@@ -1425,11 +1511,11 @@
       document.getElementById('stat-pending-due').innerText = formatINR(pendingDue);
       document.getElementById('stat-net-profit').innerText = formatINR(netProfit);
 
-      document.getElementById('badge-leads-count').innerText = leads.length;
-      document.getElementById('badge-bookings-count').innerText = bookings.length;
+      document.getElementById('badge-leads-count').innerText = window.leads.length;
+      document.getElementById('badge-bookings-count').innerText = window.bookings.length;
       document.getElementById('accounts-total-due-badge').innerText = formatINR(pendingDue);
 
-      const sortedBookings = [...bookings].sort((a,b) => new Date(a.departure) - new Date(b.departure));
+      const sortedBookings = [...window.bookings].sort((a,b) => new Date(a.departure) - new Date(b.departure));
       const tbody = document.getElementById('dashboard-upcoming-tbody');
       tbody.innerHTML = '';
 
@@ -1456,11 +1542,11 @@
 
       // Hotspots
       const destCount = {};
-      leads.forEach(l => {
+      window.leads.forEach(l => {
         const dest = l.destination.trim();
         destCount[dest] = (destCount[dest] || 0) + 1;
       });
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         const dest = b.packageName.split(' ')[1] || 'General';
         destCount[dest] = (destCount[dest] || 0) + 2;
       });
@@ -1486,7 +1572,6 @@
       }
     }
 
-    // --- Render: Leads ---
     function renderLeads() {
       const container = document.getElementById('leads-container');
       const searchQuery = (document.getElementById('lead-search')?.value || '').toLowerCase();
@@ -1494,7 +1579,7 @@
 
       container.innerHTML = '';
 
-      const filtered = leads.filter(l => {
+      const filtered = window.leads.filter(l => {
         const matchesQuery = l.name.toLowerCase().includes(searchQuery) || 
                              l.destination.toLowerCase().includes(searchQuery) ||
                              l.phone.includes(searchQuery);
@@ -1587,7 +1672,7 @@
       });
     }
 
-    // --- Module 2 Logic: Quotation Generator & Itinerary Builder (YOGI FLYING WORLD BRANDED) ---
+    // --- Quotation Module ---
     let quotationItinerary = [
       { day: 1, title: "Arrival at Dubai & Marina Dhow Cruise Dinner", desc: "Private airport pickup, 4-star hotel check-in, Marina Dhow cruise with lavish international buffet dinner." },
       { day: 2, title: "Dubai Half Day City Tour & Burj Khalifa (124th Floor)", desc: "Visit Dubai Frame, Jumeirah beach, Burj Khalifa 124th floor observation deck & Dubai Mall fountain show." },
@@ -1659,7 +1744,6 @@
 
       document.getElementById('quote-final-tag').innerText = formatINR(grandTotal);
 
-      // Construct Professional Yogi Flying World Branded WhatsApp Itinerary
       let quoteText = `✈️ *YOGI FLYING WORLD - HOLIDAY PROPOSAL* 🌍\n`;
       quoteText += `─────────────────────────\n`;
       quoteText += `👤 *Client Name:* ${client}\n`;
@@ -1718,17 +1802,17 @@
       calculateQuote();
     }
 
-    // --- Render: Bookings ---
+    // --- Bookings Module ---
     function renderBookings() {
       const tbody = document.getElementById('bookings-tbody');
       tbody.innerHTML = '';
 
-      if (bookings.length === 0) {
+      if (window.bookings.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">કોઈ બુકિંગ્સ નોંધાયેલા નથી</td></tr>`;
         return;
       }
 
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         const margin = (Number(b.totalCost) || 0) - (Number(b.supplierCost) || 0);
 
         function badgeStyle(st) {
@@ -1781,17 +1865,17 @@
       });
     }
 
-    // --- Render: Accounts & Payments ---
+    // --- Accounts Module ---
     function renderAccounts() {
       const tbody = document.getElementById('accounts-tbody');
       tbody.innerHTML = '';
 
-      if (bookings.length === 0) {
+      if (window.bookings.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">કોઈ પેમેન્ટ રેકોર્ડ ઉપલબ્ધ નથી</td></tr>`;
         return;
       }
 
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         const total = Number(b.totalCost) || 0;
         const advance = Number(b.advancePaid) || 0;
         const balance = total - advance;
@@ -1839,18 +1923,18 @@
       });
     }
 
-    // --- Module 5: Hotel & Supplier Management ---
+    // --- Suppliers Module ---
     function renderSuppliers() {
       const container = document.getElementById('suppliers-container');
       if (!container) return;
       container.innerHTML = '';
 
-      if (suppliers.length === 0) {
+      if (window.suppliers.length === 0) {
         container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">કોઈ સપ્લાયર્સ નથી</div>`;
         return;
       }
 
-      suppliers.forEach(s => {
+      window.suppliers.forEach(s => {
         const card = document.createElement('div');
         card.className = 'glass-card rounded-2xl p-5 border border-dark-700 flex flex-col justify-between';
         card.innerHTML = `
@@ -1893,7 +1977,7 @@
     function saveSupplier(e) {
       e.preventDefault();
       const newSup = {
-        id: `YFW-SUP-0${suppliers.length + 1}`,
+        id: `YFW-SUP-0${window.suppliers.length + 1}`,
         name: document.getElementById('sup-name').value.trim(),
         type: document.getElementById('sup-type').value,
         destination: document.getElementById('sup-destination').value.trim(),
@@ -1901,30 +1985,30 @@
         phone: document.getElementById('sup-phone').value.trim(),
         notes: document.getElementById('sup-notes').value.trim()
       };
-      suppliers.push(newSup);
+      window.suppliers.push(newSup);
       saveState();
       closeSupplierModal();
       showToast("સપ્લાયર વિગતો ઉમેરાઈ ગઈ!");
     }
 
     function deleteSupplier(id) {
-      suppliers = suppliers.filter(s => s.id !== id);
+      window.suppliers = window.suppliers.filter(s => s.id !== id);
       saveState();
       showToast("સપ્લાયર ડિલીટ કરવામાં આવ્યો.");
     }
 
-    // --- Module 6: Vehicle & Fleet Management ---
+    // --- Vehicles Module ---
     function renderVehicles() {
       const container = document.getElementById('vehicles-container');
       if (!container) return;
       container.innerHTML = '';
 
-      if (vehicles.length === 0) {
+      if (window.vehicles.length === 0) {
         container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">કોઈ વાહન ઉપલબ્ધ નથી</div>`;
         return;
       }
 
-      vehicles.forEach(v => {
+      window.vehicles.forEach(v => {
         let statusBadge = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
         if (v.status === 'On Duty') statusBadge = 'bg-yogi-orange/20 text-yogi-orange border-yogi-orange/40';
         if (v.status === 'Maintenance') statusBadge = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
@@ -1980,19 +2064,19 @@
         status: document.getElementById('veh-status').value,
         route: document.getElementById('veh-route').value.trim()
       };
-      vehicles.push(newV);
+      window.vehicles.push(newV);
       saveState();
       closeVehicleModal();
       showToast("વાહન અને ડ્રાઇવર સેવ થયા!");
     }
 
     function deleteVehicle(id) {
-      vehicles = vehicles.filter(v => v.id !== id);
+      window.vehicles = window.vehicles.filter(v => v.id !== id);
       saveState();
       showToast("વાહન ડિલીટ કરવામાં આવ્યું.");
     }
 
-    // --- Module 8: Profit & Loss Reports ---
+    // --- Reports Module ---
     function renderReports() {
       const tbody = document.getElementById('pl-table-tbody');
       if (!tbody) return;
@@ -2001,7 +2085,7 @@
       let totalGross = 0;
       let totalCost = 0;
 
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         const clientCost = Number(b.totalCost) || 0;
         const vendorCost = Number(b.supplierCost) || 0;
         const profit = clientCost - vendorCost;
@@ -2091,11 +2175,11 @@
       };
 
       if (id) {
-        const index = leads.findIndex(l => l.id === id);
-        if (index !== -1) leads[index] = newLead;
+        const index = window.leads.findIndex(l => l.id === id);
+        if (index !== -1) window.leads[index] = newLead;
         showToast("લીડ સફળતાપૂર્વક અપડેટ થઈ!");
       } else {
-        leads.unshift(newLead);
+        window.leads.unshift(newLead);
         showToast("નવી લીડ સેવ થઈ ગઈ!");
       }
 
@@ -2104,18 +2188,18 @@
     }
 
     function editLead(id) {
-      const l = leads.find(item => item.id === id);
+      const l = window.leads.find(item => item.id === id);
       if (l) openLeadModal(l);
     }
 
     function deleteLead(id) {
-      leads = leads.filter(l => l.id !== id);
+      window.leads = window.leads.filter(l => l.id !== id);
       saveState();
       showToast("લીડ ડિલીટ કરવામાં આવી.");
     }
 
     function convertLeadToBooking(leadId) {
-      const l = leads.find(item => item.id === leadId);
+      const l = window.leads.find(item => item.id === leadId);
       if (!l) return;
 
       openBookingModal({
@@ -2189,11 +2273,11 @@
       };
 
       if (id) {
-        const index = bookings.findIndex(b => b.id === id);
-        if (index !== -1) bookings[index] = newBooking;
+        const index = window.bookings.findIndex(b => b.id === id);
+        if (index !== -1) window.bookings[index] = newBooking;
         showToast("બુકિંગ વિગતો અપડેટ થઈ ગઈ!");
       } else {
-        bookings.unshift(newBooking);
+        window.bookings.unshift(newBooking);
         showToast("નવું બુકિંગ ઉમેરાઈ ગયું!");
       }
 
@@ -2202,30 +2286,30 @@
     }
 
     function editBooking(id) {
-      const b = bookings.find(item => item.id === id);
+      const b = window.bookings.find(item => item.id === id);
       if (b) openBookingModal(b);
     }
 
     function deleteBooking(id) {
-      bookings = bookings.filter(b => b.id !== id);
+      window.bookings = window.bookings.filter(b => b.id !== id);
       saveState();
       showToast("બુકિંગ રદ્દ કરવામાં આવ્યું.");
     }
 
-    // --- WhatsApp Templates & Autofill with YOGI FLYING WORLD Footprint ---
+    // --- WhatsApp Dropdown and Templates ---
     function populateWhatsAppDropdown() {
       const select = document.getElementById('wa-client-select');
       if (!select) return;
       select.innerHTML = '<option value="">-- Choose Lead or Booking --</option>';
 
-      leads.forEach(l => {
+      window.leads.forEach(l => {
         const opt = document.createElement('option');
         opt.value = JSON.stringify({ name: l.name, phone: l.phone, dest: l.destination, type: 'lead' });
         opt.innerText = `[Lead] ${l.name} (${l.destination})`;
         select.appendChild(opt);
       });
 
-      bookings.forEach(b => {
+      window.bookings.forEach(b => {
         const opt = document.createElement('option');
         opt.value = JSON.stringify({ name: b.clientName, phone: b.phone, dest: b.packageName, due: (b.totalCost - b.advancePaid), date: b.departure, type: 'booking' });
         opt.innerText = `[Booking] ${b.clientName} (${b.packageName})`;
@@ -2250,7 +2334,7 @@
       let msg = "";
 
       if (type === 'welcome') {
-        msg = `નમસ્તે ${data.name} જી! 🌍✈️\n\n*Yogi Flying World* (અમદાવાદ) તરફથી આપનું હાર્દિક સ્વાગત છે. તમારી ${data.dest || 'ટૂર'} માટેની પૂછપરછ અમને મળી છે.\n\nઅમારી ટીમ તમારી જરૂરિયાત અનુસાર શ્રેષ્ઠ એરલાઇન ટિકિટિંગ, પ્રીમિયમ હોટેલ અને કસ્ટમાઇઝ્ડ હોલિડે પેકેજ પ્લાન કરી રહી છે. અમે થોડી જ વારમાં આપને સંપૂર્ણ પ્લાન મોકલીશું.\n\nઆભાર,\n*Yogi Flying World*\n📞 +91 98250 00000 | Ahmedabad`;
+        msg = `નમસ્તે ${data.name} જી! 🌍✈️\n\n*Yogi Flying World* (અમદાવાદ) તરફથી આપનું હાર્દિક સ્વાગત છે. તમારી ${data.dest || 'ટૂર'} માટેની પૂછપરછ અમને મળી છે.\n\nઅમારી ટીમ તમારી જરૂરિયાત અનુસાર શ્રેષ્ઠ એરલાઇન ટિકિટિંગ, પ્રીમિયમ હોટેલ અને કસ્ટમાઇઝ્ડ હોલિડે પેકેજ પ્લાન કરી રહી છે. અમે થોડી જ વારમાં આપને સંપૂર્ણ પ્લાન મોકલીશું.\n\nઆભાર,\n*Yogi Flying World*\n📞 Ahmedabad, Gujarat`;
       } else if (type === 'quote_followup') {
         msg = `નમસ્તે ${data.name} જી,\n\nઅમે તમને ${data.dest || 'ટૂર'} માટેનું બેસ્ટ ક્વોટેશન મોકલેલ છે. શું તમે તે ચેક કર્યું?\n\nજો તેમાં ફ્લાઇટ ટાઇમિંગ્સ કે હોટેલ કેટેગરીમાં ફેરફાર કરાવવો હોય તો વિના સંકોચે જણાવશો.\n\nસંપર્ક: *Yogi Flying World*, Ahmedabad`;
       } else if (type === 'payment_reminder') {
@@ -2283,14 +2367,13 @@
       showToast("WhatsApp શરૂ થઈ રહ્યું છે...");
     }
 
-    // --- Export & Reset Data ---
     function exportDataJSON() {
       const data = {
         agency: "Yogi Flying World",
-        leads: leads,
-        bookings: bookings,
-        suppliers: suppliers,
-        vehicles: vehicles,
+        leads: window.leads,
+        bookings: window.bookings,
+        suppliers: window.suppliers,
+        vehicles: window.vehicles,
         exportedAt: new Date().toISOString()
       };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2303,54 +2386,11 @@
       showToast("Yogi Flying World નો ડેટા બેકઅપ ડાઉનલોડ થઈ ગયો!");
     }
 
-    function resetDefaultData() {
-      leads = [...DEFAULT_LEADS];
-      bookings = [...DEFAULT_BOOKINGS];
-      suppliers = [...DEFAULT_SUPPLIERS];
-      vehicles = [...DEFAULT_VEHICLES];
-      saveState();
-      showToast("તમામ મોડ્યુલ્સનો સેમ્પલ ડેટા રિસેટ થઈ ગયો!");
-    }
-
-    // --- Window Load Init ---
     window.onload = function() {
-      // Check for previously saved custom logo
-      const savedLogo = localStorage.getItem('yfw_custom_logo');
-      if (savedLogo) {
-        const logoImg = document.getElementById('custom-logo-img');
-        const defaultIcon = document.getElementById('default-brand-icon');
-        if (logoImg && defaultIcon) {
-          logoImg.src = savedLogo;
-          logoImg.classList.remove('hidden');
-          defaultIcon.classList.add('hidden');
-        }
-      }
-
-      saveState();
+      refreshAllViews();
       renderItineraryBuilder();
       calculateQuote();
     };
-
-    // --- Custom Logo Upload Handler ---
-    function handleLogoUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const dataUrl = e.target.result;
-        localStorage.setItem('yfw_custom_logo', dataUrl);
-        const logoImg = document.getElementById('custom-logo-img');
-        const defaultIcon = document.getElementById('default-brand-icon');
-        if (logoImg && defaultIcon) {
-          logoImg.src = dataUrl;
-          logoImg.classList.remove('hidden');
-          defaultIcon.classList.add('hidden');
-        }
-        showToast("તમારો ઓરિજિનલ લોગો સેટ થઈ ગયો!");
-      };
-      reader.readAsDataURL(file);
-    }
   </script>
 </body>
 </html>
