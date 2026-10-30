@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="gu" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yogi Flying World - Enterprise Travel CRM & ERP</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+          },
+          colors: {
+            yogi: {
+              purple: '#5B2C8E',
+              purpleHover: '#4B2078',
+              purpleLight: '#8C52CA',
+              purpleDark: '#3A1461',
+              orange: '#F37021',
+              orangeHover: '#DC5E12',
+              orangeLight: '#FFA05C',
+              orangeGlow: 'rgba(243, 112, 33, 0.25)',
+              purpleGlow: 'rgba(91, 44, 142, 0.35)',
+            },
+            dark: {
+              950: '#070913',
+              900: '#0E111E',
+              800: '#151A2E',
+              700: '#232A45',
+              600: '#343E63',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #070913;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+    .glass-card {
+      background: rgba(14, 17, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(140, 82, 202, 0.15);
+    }
+    .glass-card-hover:hover {
+      background: rgba(21, 26, 46, 0.95);
+      border-color: rgba(243, 112, 33, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(243, 112, 33, 0.1);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090B14;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #232A45;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #F37021;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col antialiased selection:bg-yogi-orange selection:text-white">
+  <!-- Toast Message -->
+  <div id="toast" class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-dark-900 border border-yogi-orange/40 text-yogi-orangeLight shadow-2xl backdrop-blur-md transform translate-y-[-140%] opacity-0 transition-all duration-300 pointer-events-none">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-yogi-orange text-lg"></i>
+    <span id="toast-msg" class="text-sm font-medium text-slate-100">Notification message</span>
+  </div>
+
+  <!-- Header / Navigation Bar with Yogi Flying World Identity -->
+  <header class="sticky top-0 z-40 w-full glass-card border-b border-dark-700 bg-dark-950/95 backdrop-blur-xl">
+    <div class="max-w-[1550px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Clean Single-Color / Minimal Typographic Brand Header -->
+      <div class="flex items-center gap-3">
+        <!-- Logo Image or Pure Monogram Icon -->
+        <div id="brand-logo-container" class="relative group cursor-pointer" onclick="document.getElementById('logo-file-input').click()" title="ક્લિક કરીને તમારી ઓરિજિનલ લોગો ઇમેજ અપલોડ કરો">
+          <img id="custom-logo-img" src="" alt="Yogi Flying World" class="h-11 w-auto max-w-[140px] object-contain rounded-lg hidden">
+          <div id="default-brand-icon" class="h-11 w-11 rounded-xl bg-yogi-purple border border-yogi-purpleLight/40 flex items-center justify-center text-white shadow-lg shadow-yogi-purple/30">
+            <i class="fa-solid fa-plane-up text-lg text-yogi-orange"></i>
+          </div>
+          <!-- Tiny upload overlay badge on hover -->
+          <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-dark-900 border border-dark-700 text-slate-300 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition shadow">
+            <i class="fa-solid fa-camera text-[9px] text-yogi-orange"></i>
+          </div>
+          <input type="file" id="logo-file-input" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2">
+            <!-- Clean single-color high-end typography -->
+            <h1 class="text-xl sm:text-2xl font-black brand-font tracking-wider text-white uppercase flex items-center gap-1.5">
+              <span>YOGI FLYING WORLD</span>
+            </h1>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-dark-800 text-yogi-orange border border-yogi-orange/30 font-bold uppercase tracking-wider">
+              CRM & OPS
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">
+            Ahmedabad, Gujarat • Worldwide Holiday Tours & Flights ERP
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="openLeadModal()" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-yogi-purple to-yogi-purpleHover hover:brightness-110 rounded-xl shadow-lg shadow-yogi-purple/30 border border-yogi-purpleLight/40 transition transform hover:scale-[1.02]">
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          <span>નવી લીડ</span>
+        </button>
+        <button onclick="openBookingModal()" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-yogi-orange to-amber-400 hover:brightness-110 rounded-xl shadow-lg shadow-yogi-orange/30 transition transform hover:scale-[1.02]">
+          <i class="fa-solid fa-plane-departure text-xs"></i>
+          <span class="hidden md:inline">નવું બુકિંગ</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs: ALL 8 MODULES with Brand Violet/Orange accents -->
+    <div class="max-w-[1550px] mx-auto px-4 sm:px-6 lg:px-8 border-t border-dark-700/80 overflow-x-auto custom-scrollbar">
+      <nav class="flex space-x-1 py-2.5" id="navTabs">
+        <!-- 1. Dashboard -->
+        <button onclick="switchTab('dashboard')" class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all text-white bg-gradient-to-r from-yogi-purple/80 to-yogi-purpleDark border border-yogi-orange/40 shadow-sm flex items-center gap-1.5" data-tab="dashboard">
+          <i class="fa-solid fa-chart-pie text-yogi-orange"></i>
+          <span>Overview</span>
+        </button>
+
+        <!-- 2. Leads -->
+        <button onclick="switchTab('leads')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="leads">
+          <i class="fa-solid fa-user-group text-yogi-purpleLight"></i>
+          <span>1. Leads & Inquiries</span>
+          <span id="badge-leads-count" class="px-1.5 py-0.2 text-[10px] bg-dark-700 text-slate-300 rounded-full">0</span>
+        </button>
+
+        <!-- 3. Quotation Generator -->
+        <button onclick="switchTab('quotation')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="quotation">
+          <i class="fa-solid fa-file-invoice-dollar text-yogi-orange"></i>
+          <span>2. Quotations & Itinerary</span>
+        </button>
+
+        <!-- 4. Bookings & Tours -->
+        <button onclick="switchTab('bookings')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="bookings">
+          <i class="fa-solid fa-suitcase-rolling text-indigo-400"></i>
+          <span>3. Tours & Ops</span>
+          <span id="badge-bookings-count" class="px-1.5 py-0.2 text-[10px] bg-dark-700 text-slate-300 rounded-full">0</span>
+        </button>
+
+        <!-- 5. Accounts & Payments -->
+        <button onclick="switchTab('accounts')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="accounts">
+          <i class="fa-solid fa-indian-rupee-sign text-emerald-400"></i>
+          <span>4. Accounts & Ledger</span>
+        </button>
+
+        <!-- 6. Hotel & Suppliers -->
+        <button onclick="switchTab('suppliers')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="suppliers">
+          <i class="fa-solid fa-hotel text-sky-400"></i>
+          <span>5. Hotels & B2B Suppliers</span>
+        </button>
+
+        <!-- 7. Vehicles & Fleet -->
+        <button onclick="switchTab('vehicles')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="vehicles">
+          <i class="fa-solid fa-car text-amber-400"></i>
+          <span>6. Fleet & Cabs</span>
+        </button>
+
+        <!-- 8. WhatsApp Hub -->
+        <button onclick="switchTab('whatsapp')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="whatsapp">
+          <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+          <span>7. WhatsApp Hub</span>
+        </button>
+
+        <!-- 9. P&L Financial Reports -->
+        <button onclick="switchTab('reports')" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5" data-tab="reports">
+          <i class="fa-solid fa-chart-line text-rose-400"></i>
+          <span>8. Profit & Loss</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-[1550px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ============================================== -->
+    <!-- MODULE: OVERVIEW DASHBOARD -->
+    <!-- ============================================== -->
+    <section id="tab-dashboard" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Total Bookings -->
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-yogi-purple">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bookings</span>
+            <div class="w-8 h-8 rounded-lg bg-yogi-purple/20 text-yogi-purpleLight flex items-center justify-center">
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h3 id="stat-total-bookings" class="text-2xl font-black text-white brand-font">0</h3>
+            <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+              <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> Active</span> operations
+            </p>
+          </div>
+        </div>
+
+        <!-- Active Leads Pipeline -->
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-yogi-orange">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Inquiries</span>
+            <div class="w-8 h-8 rounded-lg bg-yogi-orange/20 text-yogi-orange flex items-center justify-center">
+              <i class="fa-solid fa-filter"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h3 id="stat-active-leads" class="text-2xl font-black text-white brand-font">0</h3>
+            <p class="text-xs text-slate-400 mt-1">
+              <span id="stat-leads-conversion" class="text-yogi-orange font-bold">0%</span> conversion rate
+            </p>
+          </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-emerald-400">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Gross Revenue</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i class="fa-solid fa-vault"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h3 id="stat-total-revenue" class="text-2xl font-black text-white brand-font">₹0</h3>
+            <p class="text-xs text-slate-400 mt-1">Confirmed booking gross</p>
+          </div>
+        </div>
+
+        <!-- Pending Payments -->
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-rose-500">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Due</span>
+            <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h3 id="stat-pending-due" class="text-2xl font-black text-rose-300 brand-font">₹0</h3>
+            <p class="text-xs text-slate-400 mt-1">Pending client balance</p>
+          </div>
+        </div>
+
+        <!-- Net Profit -->
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-yogi-purpleLight">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Net Margin</span>
+            <div class="w-8 h-8 rounded-lg bg-yogi-purple/20 text-yogi-purpleLight flex items-center justify-center">
+              <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h3 id="stat-net-profit" class="text-2xl font-black text-emerald-300 brand-font">₹0</h3>
+            <p class="text-xs text-slate-400 mt-1">Agency earnings</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Banner & Top Destinations -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Upcoming Travel Departures -->
+        <div class="lg:col-span-2 glass-card rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-plane-departure text-yogi-orange"></i>
+                આવનારા પ્રવાસો (Upcoming Departures)
+              </h2>
+              <p class="text-xs text-slate-400">Yogi Flying World ના નજીકના પ્રવાસીઓ</p>
+            </div>
+            <button onclick="switchTab('bookings')" class="text-xs text-yogi-orange hover:underline flex items-center gap-1 font-semibold">
+              બધા જુઓ <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-dark-700">
+                <tr>
+                  <th class="pb-3 font-semibold">Client Name</th>
+                  <th class="pb-3 font-semibold">Destination</th>
+                  <th class="pb-3 font-semibold">Departure Date</th>
+                  <th class="pb-3 font-semibold">Pax</th>
+                  <th class="pb-3 font-semibold">Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-upcoming-tbody" class="divide-y divide-dark-700/60 text-slate-300">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Destination Hotspots & Controls -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2 mb-1">
+              <i class="fa-solid fa-fire text-yogi-orange"></i>
+              Top Trending Destinations
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">સૌથી વધુ ઈન્ક્વાયરી ધરાવતાં હોલિડે પેકેજીસ</p>
+            
+            <div id="top-destinations-list" class="space-y-3">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-dark-700">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>Agency Data:</span>
+              <div class="flex gap-2">
+                <button onclick="exportDataJSON()" class="px-3 py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs transition border border-slate-700">
+                  <i class="fa-solid fa-download mr-1 text-yogi-orange"></i> Export Backup
+                </button>
+                <button onclick="resetDefaultData()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 border border-rose-500/20 hover:bg-rose-900/50 text-rose-300 text-xs transition">
+                  <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 1: LEADS & INQUIRIES MANAGEMENT -->
+    <!-- ============================================== -->
+    <section id="tab-leads" class="hidden space-y-6">
+      <div class="glass-card p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="lead-search" oninput="renderLeads()" placeholder="Search by client name, destination, phone..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <select id="lead-status-filter" onchange="renderLeads()" class="px-3 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 focus:outline-none focus:border-yogi-orange">
+            <option value="ALL">All Statuses (બધા સ્ટેટસ)</option>
+            <option value="New">New (નવી લીડ)</option>
+            <option value="Quote Sent">Quote Sent (ક્વોટ મોકલ્યો)</option>
+            <option value="Follow-up">Follow-up (ફોલોઅપ)</option>
+            <option value="Confirmed">Confirmed / Won (કન્ફર્મ)</option>
+            <option value="Lost">Lost (રદ્દ)</option>
+          </select>
+        </div>
+
+        <button onclick="openLeadModal()" class="px-4 py-2 bg-gradient-to-r from-yogi-purple to-yogi-purpleHover hover:brightness-110 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-yogi-purple/30 border border-yogi-purpleLight/30">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Add New Lead</span>
+        </button>
+      </div>
+
+      <div id="leads-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 2: QUOTATION GENERATOR (YOGI BRANDED) -->
+    <!-- ============================================== -->
+    <section id="tab-quotation" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-dark-700">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 brand-font">
+              <i class="fa-solid fa-file-invoice-dollar text-yogi-orange"></i>
+              Yogi Flying World - Quotation & Itinerary Builder
+            </h2>
+            <p class="text-xs text-slate-400">દિવસવાર પ્રવાસ કાર્યક્રમ, કોસ્ટિંગ બ્રેકડાઉન અને WhatsApp શેરિંગ</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="loadSampleQuote()" class="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-xs text-slate-300 border border-dark-700">
+              <i class="fa-solid fa-wand-magic-sparkles mr-1 text-yogi-orange"></i> Sample Load
+            </button>
+            <button onclick="resetQuoteForm()" class="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-xs text-slate-300 border border-dark-700">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+          <!-- Quotation Config Form -->
+          <div class="lg:col-span-7 space-y-5">
+            <!-- Client & Trip Basics -->
+            <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
+              <h3 class="text-xs font-bold text-yogi-orange uppercase tracking-wider">1. Client & Travel Details</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label class="block text-slate-400 mb-1">ક્લાયન્ટ નામ (Client Name)</label>
+                  <input type="text" id="quote-client" placeholder="e.g. Hardik Patel" oninput="calculateQuote()" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:border-yogi-orange">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">WhatsApp Mobile</label>
+                  <input type="text" id="quote-phone" placeholder="919876543210" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:border-yogi-orange">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">ગંતવ્ય સ્થળ (Destination & Title)</label>
+                  <input type="text" id="quote-destination" placeholder="e.g. 5N/6D Dubai Extravaganza" oninput="calculateQuote()" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:border-yogi-orange">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">પ્રવાસ તારીખ (Travel Date)</label>
+                  <input type="date" id="quote-date" onchange="calculateQuote()" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:border-yogi-orange">
+                </div>
+              </div>
+            </div>
+
+            <!-- Cost Breakdown Elements -->
+            <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold text-yogi-purpleLight uppercase tracking-wider">2. Cost Components & Supplier Expenses</h3>
+                <span class="text-[11px] text-slate-400">All prices in INR (₹)</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <label class="block text-slate-400 mb-1">Flight Expense (₹)</label>
+                  <input type="number" id="q-flight" value="45000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-slate-200">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Hotel Stay (₹)</label>
+                  <input type="number" id="q-hotel" value="40000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-slate-200">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Cab / Transport (₹)</label>
+                  <input type="number" id="q-transport" value="18000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-slate-200">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Activities & Passes (₹)</label>
+                  <input type="number" id="q-activities" value="15000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-slate-200">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Visa & Ins. (₹)</label>
+                  <input type="number" id="q-visa" value="12000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-dark-700 rounded text-slate-200">
+                </div>
+                <div>
+                  <label class="block text-yogi-orange font-bold mb-1">Markup Profit (₹)</label>
+                  <input type="number" id="q-margin" value="25000" oninput="calculateQuote()" class="w-full px-2.5 py-1.5 bg-dark-950 border border-yogi-orange/50 rounded text-yogi-orange font-bold">
+                </div>
+              </div>
+            </div>
+
+            <!-- Day-wise Itinerary Inputs -->
+            <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold text-yogi-orange uppercase tracking-wider">3. Day-wise Itinerary Builder</h3>
+                <button onclick="addItineraryDay()" class="px-2.5 py-1 rounded-md bg-yogi-purple/20 text-yogi-purpleLight hover:bg-yogi-purple hover:text-white text-xs font-bold transition">
+                  + Add Day
+                </button>
+              </div>
+              <div id="itinerary-days-container" class="space-y-2">
+                <!-- Days populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Quotation Preview & WhatsApp Export -->
+          <div class="lg:col-span-5 flex flex-col justify-between glass-card p-5 rounded-2xl border border-dark-700">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-1.5">
+                  <i class="fa-solid fa-eye text-yogi-orange"></i> Live Quotation Preview
+                </span>
+                <span id="quote-final-tag" class="px-2.5 py-0.5 rounded-full bg-yogi-orange/20 text-yogi-orange font-black text-xs border border-yogi-orange/30">₹1,55,000</span>
+              </div>
+              <textarea id="quote-formatted-text" rows="16" readonly class="w-full p-3.5 text-xs bg-dark-950/90 border border-dark-700 rounded-xl text-slate-200 font-mono leading-relaxed custom-scrollbar"></textarea>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-dark-700 space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="copyToClipboard(document.getElementById('quote-formatted-text').value)" class="py-2 px-3 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 border border-dark-700 transition">
+                  <i class="fa-regular fa-copy"></i>
+                  <span>કોપી ક્વોટ (Copy)</span>
+                </button>
+                <button onclick="sendQuoteWhatsApp()" class="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:brightness-110 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-700/30 transition">
+                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                  <span>Send via WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 3: BOOKINGS & TOURS MANAGEMENT -->
+    <!-- ============================================== -->
+    <section id="tab-bookings" class="hidden space-y-6">
+      <div class="glass-card p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2 brand-font">
+            <i class="fa-solid fa-list-check text-yogi-purpleLight"></i>
+            કન્ફર્મ્ડ બુકિંગ્સ અને ઓપરેશન્સ (Bookings Pipeline)
+          </h2>
+          <p class="text-xs text-slate-400">ફ્લાઇટ, હોટેલ, કેબ અને વિઝા સર્વિસ સ્ટેટસ મેનેજમેન્ટ</p>
+        </div>
+        <button onclick="openBookingModal()" class="px-4 py-2 bg-gradient-to-r from-yogi-orange to-amber-400 hover:brightness-110 text-slate-950 font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-yogi-orange/20 self-start md:self-auto">
+          <i class="fa-solid fa-plus"></i>
+          <span>Create Booking</span>
+        </button>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-dark-700">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-dark-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-dark-700">
+              <tr>
+                <th class="py-3 px-4">Booking ID</th>
+                <th class="py-3 px-4">Client & Contact</th>
+                <th class="py-3 px-4">Package / Destination</th>
+                <th class="py-3 px-4">Travel Dates</th>
+                <th class="py-3 px-4 text-center">Ops Checklist</th>
+                <th class="py-3 px-4 text-right">Cost / Margin</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody" class="divide-y divide-dark-700/60">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 4: ACCOUNTS & PAYMENTS -->
+    <!-- ============================================== -->
+    <section id="tab-accounts" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2 brand-font">
+              <i class="fa-solid fa-credit-card text-emerald-400"></i>
+              ક્લાયન્ટ પેમેન્ટ અને બાકી રકમ (Accounts & Payments)
+            </h2>
+            <p class="text-xs text-slate-400">પેકેજ રકમ, એડવાન્સ, બાકી રકમ અને પેમેન્ટ રિમાઇન્ડર્સ</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Total Uncollected Balance:</span>
+            <span id="accounts-total-due-badge" class="px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-300 font-bold text-sm">₹0</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-dark-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-dark-700">
+              <tr>
+                <th class="py-3 px-4">Client Name</th>
+                <th class="py-3 px-4">Package</th>
+                <th class="py-3 px-4 text-right">Total (₹)</th>
+                <th class="py-3 px-4 text-right">Advance Received (₹)</th>
+                <th class="py-3 px-4 text-right">Balance Due (₹)</th>
+                <th class="py-3 px-4">Due Date</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-center">Quick Action</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-tbody" class="divide-y divide-dark-700/60">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 5: HOTEL & SUPPLIER MANAGEMENT -->
+    <!-- ============================================== -->
+    <section id="tab-suppliers" class="hidden space-y-6">
+      <div class="glass-card p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2 brand-font">
+            <i class="fa-solid fa-hotel text-sky-400"></i>
+            Hotel & B2B Supplier Directory (DMC & Vendors)
+          </h2>
+          <p class="text-xs text-slate-400">હોટેલિયર્સ, ટિકિટિંગ બ્રોકર્સ અને વિઝા એજન્ટ્સ</p>
+        </div>
+        <button onclick="openSupplierModal()" class="px-4 py-2 bg-gradient-to-r from-sky-500 to-cyan-500 hover:brightness-110 text-slate-950 font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-sky-500/20 self-start md:self-auto">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add New Supplier</span>
+        </button>
+      </div>
+
+      <!-- Suppliers Grid -->
+      <div id="suppliers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 6: VEHICLE & FLEET MANAGEMENT -->
+    <!-- ============================================== -->
+    <section id="tab-vehicles" class="hidden space-y-6">
+      <div class="glass-card p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2 brand-font">
+            <i class="fa-solid fa-car text-yogi-orange"></i>
+            Vehicle & Fleet Management (Cabs & Drivers)
+          </h2>
+          <p class="text-xs text-slate-400">સેડાન, SUV/ઇનોવા, ટેમ્પો ટ્રાવેલર અને ડ્રાઇવર અસાઇનમેન્ટ</p>
+        </div>
+        <button onclick="openVehicleModal()" class="px-4 py-2 bg-gradient-to-r from-yogi-purple to-yogi-purpleHover hover:brightness-110 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-yogi-purple/20 self-start md:self-auto">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add Vehicle / Driver</span>
+        </button>
+      </div>
+
+      <!-- Fleet Grid -->
+      <div id="vehicles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 7: WHATSAPP COMMUNICATION HUB -->
+    <!-- ============================================== -->
+    <section id="tab-whatsapp" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white brand-font">Yogi Flying World - Direct WhatsApp Templates</h2>
+            <p class="text-xs text-slate-400">એક ક્લિકથી કસ્ટમાઇઝ્ડ પ્રોફેશનલ મેસેજ ક્લાયન્ટને મોકલો</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <div class="lg:col-span-1 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">ક્લાયન્ટ સિલેક્ટ કરો (Select Client)</label>
+              <select id="wa-client-select" onchange="autoFillWhatsApp()" class="w-full px-3 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 focus:outline-none focus:border-yogi-orange">
+                <option value="">-- Choose Lead or Booking --</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp Mobile Number</label>
+              <input type="text" id="wa-phone" placeholder="919876543210" class="w-full px-3 py-2 text-xs sm:text-sm bg-dark-900 border border-dark-700 rounded-xl text-slate-200 focus:outline-none focus:border-yogi-orange">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">મેસેજ ટેમ્પલેટ પસંદ કરો (Template)</label>
+              <div class="space-y-2">
+                <button onclick="applyWATemplate('welcome')" class="w-full text-left px-3 py-2 text-xs rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-slate-300 hover:text-yogi-orange transition">
+                  <i class="fa-solid fa-hands-clapping mr-1.5 text-yogi-orange"></i> 1. Welcome & Inquiry Acknowledgement
+                </button>
+                <button onclick="applyWATemplate('quote_followup')" class="w-full text-left px-3 py-2 text-xs rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-slate-300 hover:text-yogi-orange transition">
+                  <i class="fa-solid fa-file-invoice mr-1.5 text-yogi-purpleLight"></i> 2. Itinerary & Quote Follow-up
+                </button>
+                <button onclick="applyWATemplate('payment_reminder')" class="w-full text-left px-3 py-2 text-xs rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-slate-300 hover:text-yogi-orange transition">
+                  <i class="fa-solid fa-bell mr-1.5 text-rose-400"></i> 3. Payment Balance Reminder
+                </button>
+                <button onclick="applyWATemplate('trip_departure')" class="w-full text-left px-3 py-2 text-xs rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-slate-300 hover:text-yogi-orange transition">
+                  <i class="fa-solid fa-plane-departure mr-1.5 text-indigo-400"></i> 4. Pre-Trip Reminder & Packing Info
+                </button>
+                <button onclick="applyWATemplate('review_request')" class="w-full text-left px-3 py-2 text-xs rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-slate-300 hover:text-yogi-orange transition">
+                  <i class="fa-solid fa-star mr-1.5 text-amber-400"></i> 5. Trip Completed - Google Review Request
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-2 flex flex-col justify-between glass-card p-5 rounded-xl border border-dark-700">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">Live Message Preview</span>
+                <button onclick="copyToClipboard(document.getElementById('wa-message-body').value)" class="text-xs text-yogi-orange hover:underline flex items-center gap-1">
+                  <i class="fa-regular fa-copy"></i> કોપી કરો (Copy)
+                </button>
+              </div>
+              <textarea id="wa-message-body" rows="9" class="w-full p-3.5 text-xs sm:text-sm bg-dark-950/80 border border-dark-700 rounded-xl text-slate-200 focus:outline-none focus:border-yogi-orange font-mono leading-relaxed" placeholder="Select a template or write custom message..."></textarea>
+            </div>
+
+            <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-dark-700">
+              <p class="text-[11px] text-slate-400">
+                <i class="fa-solid fa-circle-info text-yogi-orange mr-1"></i> Yogi Flying World ના સત્તાવાર એકાઉન્ટ સાથે WhatsApp ઓપન થશે.
+              </p>
+              <button onclick="sendCustomWhatsApp()" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:brightness-110 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-700/30 transition">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>વોટ્સએપ મોકલો (Send on WhatsApp)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- MODULE 8: PROFIT & LOSS REPORTS -->
+    <!-- ============================================== -->
+    <section id="tab-reports" class="hidden space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-yogi-purple">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Gross Booking Sales</span>
+          <h3 id="pl-total-sales" class="text-2xl font-black text-white mt-2 brand-font">₹0</h3>
+          <p class="text-[11px] text-slate-400 mt-1">Total revenue collected & booked</p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-rose-500">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Supplier Costs (COGS)</span>
+          <h3 id="pl-total-cogs" class="text-2xl font-black text-rose-300 mt-2 brand-font">₹0</h3>
+          <p class="text-[11px] text-slate-400 mt-1">Flights, hotels, cab & visa expenses</p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-400">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Net Realized Profit</span>
+          <h3 id="pl-net-profit" class="text-2xl font-black text-emerald-300 mt-2 brand-font">₹0</h3>
+          <p class="text-[11px] text-emerald-400 mt-1 font-semibold">Net agency earnings</p>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-l-yogi-orange">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Average Profit Margin</span>
+          <h3 id="pl-avg-margin" class="text-2xl font-black text-yogi-orange mt-2 brand-font">0%</h3>
+          <p class="text-[11px] text-slate-400 mt-1">Operating margin percentage</p>
+        </div>
+      </div>
+
+      <!-- Per-Booking Profitability Ledger -->
+      <div class="glass-card p-6 rounded-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2 brand-font">
+              <i class="fa-solid fa-scale-balanced text-yogi-orange"></i>
+              Per-Booking Profitability & Margin Ledger
+            </h3>
+            <p class="text-xs text-slate-400">દરેક બુકિંગ વાઈઝ સપ્લાયર ખર્ચ, ક્લાયન્ટ ચાર્જ અને ચોખ્ખો નફો</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-dark-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-dark-700">
+              <tr>
+                <th class="py-3 px-4">Booking ID</th>
+                <th class="py-3 px-4">Client Name</th>
+                <th class="py-3 px-4">Package</th>
+                <th class="py-3 px-4 text-right">Selling Price (₹)</th>
+                <th class="py-3 px-4 text-right">Vendor Cost (₹)</th>
+                <th class="py-3 px-4 text-right">Net Profit (₹)</th>
+                <th class="py-3 px-4 text-center">Margin %</th>
+                <th class="py-3 px-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="pl-table-tbody" class="divide-y divide-dark-700/60">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================== -->
+  <!-- MODALS WITH REBRANDED ACCENTS -->
+  <!-- ============================================== -->
+  <!-- MODAL: ADD / EDIT LEAD -->
+  <div id="modal-lead" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="glass-card max-w-xl w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
+        <h3 id="lead-modal-title" class="text-base font-bold text-white flex items-center gap-2 brand-font">
+          <i class="fa-solid fa-user-plus text-yogi-orange"></i>
+          નવી લીડ / ઈન્ક્વાયરી ઉમેરો
+        </h3>
+        <button onclick="closeLeadModal()" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="lead-form" onsubmit="saveLead(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="lead-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">ક્લાયન્ટ નામ (Client Name) *</label>
+            <input type="text" id="lead-name" required placeholder="દા.ત. Rajesh Patel" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">WhatsApp / Phone No. *</label>
+            <input type="tel" id="lead-phone" required placeholder="919876543210" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">સ્થળ / Destination *</label>
+            <input type="text" id="lead-destination" required placeholder="દા.ત. Dubai, Maldives, Kashmir" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">અંદાજિત તારીખ (Travel Date)</label>
+            <input type="date" id="lead-date" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Adults</label>
+            <input type="number" id="lead-adults" min="1" value="2" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Children</label>
+            <input type="number" id="lead-children" min="0" value="0" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Budget (₹)</label>
+            <input type="number" id="lead-budget" placeholder="100000" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Lead Source</label>
+            <select id="lead-source" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+              <option value="Instagram">Instagram / Facebook</option>
+              <option value="Google">Google / Website</option>
+              <option value="Referral">Client Referral (મિત્ર / જૂના ક્લાયન્ટ)</option>
+              <option value="Walk-in">Walk-in Office (Ahmedabad)</option>
+              <option value="WhatsApp">Direct WhatsApp</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Pipeline Status</label>
+            <select id="lead-status" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+              <option value="New">New Lead</option>
+              <option value="Quote Sent">Quote Sent</option>
+              <option value="Follow-up">Follow-up</option>
+              <option value="Confirmed">Confirmed / Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Next Follow-up Date</label>
+          <input type="date" id="lead-followup-date" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">વિશેષ વિગત / Notes</label>
+          <textarea id="lead-notes" rows="2" placeholder="4 Star Hotel, Candlelight dinner, Private Cab..." class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-dark-700">
+          <button type="button" onclick="closeLeadModal()" class="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300">રદ્દ કરો (Cancel)</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-gradient-to-r from-yogi-purple to-yogi-purpleHover text-white font-bold shadow-lg shadow-yogi-purple/30">સેવ કરો (Save Lead)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT BOOKING -->
+  <div id="modal-booking" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="glass-card max-w-2xl w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
+        <h3 id="booking-modal-title" class="text-base font-bold text-white flex items-center gap-2 brand-font">
+          <i class="fa-solid fa-plane-circle-check text-yogi-orange"></i>
+          નવું ટૂર બુકિંગ ઉમેરો (New Booking)
+        </h3>
+        <button onclick="closeBookingModal()" class="w-8 h-8 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="booking-form" onsubmit="saveBooking(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="booking-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">ક્લાયન્ટ નામ (Client Name) *</label>
+            <input type="text" id="booking-client" required placeholder="દા.ત. Amit Shah" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">WhatsApp / Phone No. *</label>
+            <input type="tel" id="booking-phone" required placeholder="919876543210" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">પેકેજ / ટૂર નામ (Package Title) *</label>
+            <input type="text" id="booking-package" required placeholder="5N/6D Dubai Deluxe Tour" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">મુસાફરોની સંખ્યા (Pax)</label>
+            <input type="text" id="booking-pax" placeholder="2 Adults, 1 Child" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">ઉપડવાની તારીખ (Departure)</label>
+            <input type="date" id="booking-departure" required class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">પરત આવવાની તારીખ (Return)</label>
+            <input type="date" id="booking-return" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <!-- Operations Checklist Statuses -->
+        <div class="p-3 bg-dark-950/80 rounded-xl border border-dark-700 space-y-2">
+          <span class="block text-[11px] font-bold text-yogi-purpleLight uppercase tracking-wider">ઓપરેશન્સ સ્ટેટસ (Operations Status)</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Flight Tickets</label>
+              <select id="booking-flight" class="w-full px-2 py-1.5 bg-dark-900 border border-dark-700 rounded text-slate-200">
+                <option value="Confirmed">Confirmed</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending">Pending</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Hotel Voucher</label>
+              <select id="booking-hotel" class="w-full px-2 py-1.5 bg-dark-900 border border-dark-700 rounded text-slate-200">
+                <option value="Confirmed">Confirmed</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Cab / Transfer</label>
+              <select id="booking-cab" class="w-full px-2 py-1.5 bg-dark-900 border border-dark-700 rounded text-slate-200">
+                <option value="Confirmed">Confirmed</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Visa Status</label>
+              <select id="booking-visa" class="w-full px-2 py-1.5 bg-dark-900 border border-dark-700 rounded text-slate-200">
+                <option value="Confirmed">Approved</option>
+                <option value="In Progress">In Process</option>
+                <option value="Pending">Documents Due</option>
+                <option value="N/A">Not Required</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Total Package Cost (₹) *</label>
+            <input type="number" id="booking-total-cost" required placeholder="120000" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Supplier / Vendor Cost (₹)</label>
+            <input type="number" id="booking-supplier-cost" placeholder="95000" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Advance Received (₹)</label>
+            <input type="number" id="booking-advance" placeholder="40000" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Balance Due Date</label>
+          <input type="date" id="booking-due-date" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 focus:outline-none focus:border-yogi-orange">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-dark-700">
+          <button type="button" onclick="closeBookingModal()" class="px-4 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300">રદ્દ કરો (Cancel)</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-gradient-to-r from-yogi-orange to-amber-400 text-slate-950 font-bold shadow-lg shadow-yogi-orange/20">સેવ બુકિંગ (Save)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT SUPPLIER -->
+  <div id="modal-supplier" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="glass-card max-w-lg w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2 brand-font">
+          <i class="fa-solid fa-hotel text-sky-400"></i>
+          નવો સપ્લાયર / હોટેલ પાર્ટનર ઉમેરો
+        </h3>
+        <button onclick="closeSupplierModal()" class="w-8 h-8 rounded-lg bg-dark-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="supplier-form" onsubmit="saveSupplier(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Vendor / Hotel Name *</label>
+          <input type="text" id="sup-name" required placeholder="Atlantis The Palm / Arabian Adventures DMC" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Category / Type</label>
+            <select id="sup-type" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+              <option value="Hotel & Resort">Hotel & Resort</option>
+              <option value="Destination DMC">Destination DMC</option>
+              <option value="Flight Broker">Flight Broker / Consolidator</option>
+              <option value="Visa Agency">Visa Services</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Destination Covered</label>
+            <input type="text" id="sup-destination" required placeholder="Dubai, Thailand, Kashmir..." class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Contact Person</label>
+            <input type="text" id="sup-person" placeholder="Manager Name" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Phone / WhatsApp *</label>
+            <input type="tel" id="sup-phone" required placeholder="919876543210" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Special Contracted Rates / Notes</label>
+          <input type="text" id="sup-notes" placeholder="e.g. 15% flat B2B discount, Free breakfast vouchers" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-dark-700">
+          <button type="button" onclick="closeSupplierModal()" class="px-4 py-2 rounded-lg bg-dark-800 text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold">Save Supplier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT VEHICLE -->
+  <div id="modal-vehicle" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="glass-card max-w-lg w-full rounded-2xl border border-dark-700 p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 border-b border-dark-700 mb-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2 brand-font">
+          <i class="fa-solid fa-car text-yogi-orange"></i>
+          નવું વાહન / ડ્રાઇવર ઉમેરો (Add Vehicle)
+        </h3>
+        <button onclick="closeVehicleModal()" class="w-8 h-8 rounded-lg bg-dark-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="vehicle-form" onsubmit="saveVehicle(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Vehicle Model *</label>
+            <input type="text" id="veh-model" required placeholder="Toyota Innova Crysta / Dzire" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Registration No. *</label>
+            <input type="text" id="veh-reg" required placeholder="GJ-01-AB-1234" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200 uppercase font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Vehicle Category</label>
+            <select id="veh-type" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+              <option value="Sedan (4 Seater)">Sedan (4 Seater)</option>
+              <option value="SUV / Innova (6-7 Seater)">SUV / Innova (6-7 Seater)</option>
+              <option value="Tempo Traveller (12-17 Seater)">Tempo Traveller (12-17 Seater)</option>
+              <option value="Luxury Coach (30+ Seater)">Luxury Coach (30+ Seater)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Current Fleet Status</label>
+            <select id="veh-status" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+              <option value="Available">Available (હાજર)</option>
+              <option value="On Duty">On Duty (ટૂર પર)</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Driver Name *</label>
+            <input type="text" id="veh-driver" required placeholder="Ramesh Bhai" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Driver Mobile *</label>
+            <input type="tel" id="veh-driver-phone" required placeholder="919876543210" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Active Duty / Route Assignment</label>
+          <input type="text" id="veh-route" placeholder="e.g. Airport pickup for Amit Shah or Local Goa Tour" class="w-full px-3 py-2 bg-dark-950 border border-dark-700 rounded-lg text-slate-200">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-dark-700">
+          <button type="button" onclick="closeVehicleModal()" class="px-4 py-2 rounded-lg bg-dark-800 text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-gradient-to-r from-yogi-purple to-yogi-purpleHover text-white font-bold">Save Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer with Yogi Flying World Brand Footprint -->
+  <footer class="mt-auto border-t border-dark-700/60 py-4 text-center text-xs text-slate-500">
+    <p>© 2026 <b class="text-white">Yogi Flying World</b> — Enterprise Travel Agency CRM • Ahmedabad, Gujarat • All 8 Modules Operational</p>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- JAVASCRIPT STATE ENGINE & REBRANDED LOGIC -->
+  <!-- ============================================== -->
+  <script>
+    // --- Mock Initial Data Sets ---
+    const DEFAULT_LEADS = [
+      {
+        id: "YFW-LD-101",
+        name: "Jignesh Mehta",
+        phone: "919825012345",
+        destination: "Dubai",
+        date: "2026-11-15",
+        adults: 2,
+        children: 1,
+        budget: 185000,
+        source: "Instagram",
+        status: "Quote Sent",
+        followUpDate: "2026-11-02",
+        notes: "Wants Burj Khalifa 148th floor and Desert Safari with quad bike."
+      },
+      {
+        id: "YFW-LD-102",
+        name: "Pooja Sharma",
+        phone: "919712398765",
+        destination: "Kashmir",
+        date: "2026-12-10",
+        adults: 4,
+        children: 0,
+        budget: 140000,
+        source: "Referral",
+        status: "New",
+        followUpDate: "2026-11-01",
+        notes: "Houseboat stay at Dal lake required for 2 nights."
+      },
+      {
+        id: "YFW-LD-103",
+        name: "Rahul Verma",
+        phone: "919898011223",
+        destination: "Bali",
+        date: "2026-11-20",
+        adults: 2,
+        children: 0,
+        budget: 160000,
+        source: "Google",
+        status: "Follow-up",
+        followUpDate: "2026-11-03",
+        notes: "Honeymoon package with private pool villa in Ubud."
+      },
+      {
+        id: "YFW-LD-104",
+        name: "Bhavik Shah",
+        phone: "919426033445",
+        destination: "Goa",
+        date: "2026-11-08",
+        adults: 6,
+        children: 0,
+        budget: 90000,
+        source: "Walk-in",
+        status: "Confirmed",
+        followUpDate: "",
+        notes: "Bachelors group trip, North Goa 4-star resort."
+      }
+    ];
+
+    const DEFAULT_BOOKINGS = [
+      {
+        id: "YFW-BK-8001",
+        clientName: "Bhavik Shah",
+        phone: "919426033445",
+        packageName: "4N/5D Goa Beach Party & Cruise",
+        pax: "6 Adults",
+        departure: "2026-11-08",
+        returnDate: "2026-11-12",
+        flightStatus: "Confirmed",
+        hotelStatus: "Confirmed",
+        cabStatus: "Confirmed",
+        visaStatus: "N/A",
+        totalCost: 95000,
+        supplierCost: 74000,
+        advancePaid: 60000,
+        dueDate: "2026-11-05"
+      },
+      {
+        id: "YFW-BK-8002",
+        clientName: "Sneha Patel",
+        phone: "919879512345",
+        packageName: "6N/7D Exotic Switzerland & Paris",
+        pax: "2 Adults",
+        departure: "2026-11-25",
+        returnDate: "2026-12-02",
+        flightStatus: "Confirmed",
+        hotelStatus: "Confirmed",
+        cabStatus: "In Progress",
+        visaStatus: "Confirmed",
+        totalCost: 380000,
+        supplierCost: 310000,
+        advancePaid: 250000,
+        dueDate: "2026-11-15"
+      },
+      {
+        id: "YFW-BK-8003",
+        clientName: "Manish Trivedi",
+        phone: "919909012345",
+        packageName: "4N/5D Maldives Overwater Villa",
+        pax: "2 Adults",
+        departure: "2026-12-05",
+        returnDate: "2026-12-09",
+        flightStatus: "In Progress",
+        hotelStatus: "Confirmed",
+        cabStatus: "Confirmed",
+        visaStatus: "N/A",
+        totalCost: 260000,
+        supplierCost: 215000,
+        advancePaid: 100000,
+        dueDate: "2026-11-20"
+      }
+    ];
+
+    const DEFAULT_SUPPLIERS = [
+      {
+        id: "YFW-SUP-01",
+        name: "Arabian Adventures DMC",
+        type: "Destination DMC",
+        destination: "Dubai & UAE",
+        person: "Tariq Mansoor",
+        phone: "971501234567",
+        notes: "Direct contract rates for Desert Safari, Dhow cruise & Burj Khalifa."
+      },
+      {
+        id: "YFW-SUP-02",
+        name: "Grand Hyatt & Marriott B2B Desk",
+        type: "Hotel & Resort",
+        destination: "Goa & Mumbai",
+        person: "Suman Joshi",
+        phone: "919820011223",
+        notes: "15% flat agency commission on corporate and holiday bookings."
+      },
+      {
+        id: "YFW-SUP-03",
+        name: "Paradise Kashmir DMC",
+        type: "Destination DMC",
+        destination: "Srinagar, Gulmarg & Pahalgam",
+        person: "Farooq Ahmed",
+        phone: "919419098765",
+        notes: "Private Innova fleet and luxury houseboat tie-ups at Dal lake."
+      }
+    ];
+
+    const DEFAULT_VEHICLES = [
+      {
+        id: "YFW-VEH-101",
+        model: "Toyota Innova Crysta",
+        regNo: "GJ-01-ER-4482",
+        type: "SUV / Innova (6-7 Seater)",
+        driver: "Ramesh Prajapati",
+        phone: "919825599881",
+        status: "Available",
+        route: "Ahmedabad Airport Pickup readiness"
+      },
+      {
+        id: "YFW-VEH-102",
+        model: "Maruti Dzire",
+        regNo: "GA-03-K-9011",
+        type: "Sedan (4 Seater)",
+        driver: "Sunil Naik",
+        phone: "919422033441",
+        status: "On Duty",
+        route: "Goa North Sightseeing for Bhavik Shah"
+      },
+      {
+        id: "YFW-VEH-103",
+        model: "Force Urbania / Tempo",
+        regNo: "DL-01-TA-7744",
+        type: "Tempo Traveller (12-17 Seater)",
+        driver: "Kuldeep Singh",
+        phone: "919811099882",
+        status: "Available",
+        route: "Delhi - Agra - Jaipur Triangle"
+      }
+    ];
+
+    // --- State Storage in LocalStorage ---
+    let leads = JSON.parse(localStorage.getItem('yfw_crm_leads')) || DEFAULT_LEADS;
+    let bookings = JSON.parse(localStorage.getItem('yfw_crm_bookings')) || DEFAULT_BOOKINGS;
+    let suppliers = JSON.parse(localStorage.getItem('yfw_crm_suppliers')) || DEFAULT_SUPPLIERS;
+    let vehicles = JSON.parse(localStorage.getItem('yfw_crm_vehicles')) || DEFAULT_VEHICLES;
+
+    function saveState() {
+      localStorage.setItem('yfw_crm_leads', JSON.stringify(leads));
+      localStorage.setItem('yfw_crm_bookings', JSON.stringify(bookings));
+      localStorage.setItem('yfw_crm_suppliers', JSON.stringify(suppliers));
+      localStorage.setItem('yfw_crm_vehicles', JSON.stringify(vehicles));
+
+      renderDashboard();
+      renderLeads();
+      renderBookings();
+      renderAccounts();
+      renderSuppliers();
+      renderVehicles();
+      renderReports();
+      populateWhatsAppDropdown();
+    }
+
+    // --- Tab Switching with Rebranded Accents ---
+    function switchTab(tabId) {
+      const allTabs = ['dashboard', 'leads', 'quotation', 'bookings', 'accounts', 'suppliers', 'vehicles', 'whatsapp', 'reports'];
+      allTabs.forEach(t => {
+        const section = document.getElementById(`tab-${t}`);
+        if (section) section.classList.add('hidden');
+      });
+
+      const activeSection = document.getElementById(`tab-${tabId}`);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = "tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all text-white bg-gradient-to-r from-yogi-purple to-yogi-purpleDark border border-yogi-orange/40 shadow-sm flex items-center gap-1.5";
+        } else {
+          btn.className = "tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-400 hover:text-white hover:bg-dark-800 flex items-center gap-1.5";
+        }
+      });
+    }
+
+    // --- Toast Notifications ---
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-msg');
+      const icon = document.getElementById('toast-icon');
+
+      msg.innerText = message;
+      if (isError) {
+        toast.className = toast.className.replace(/border-yogi-orange\/40 text-yogi-orangeLight/, 'border-rose-500/40 text-rose-300');
+        icon.className = 'fa-solid fa-circle-exclamation text-rose-400 text-lg';
+      } else {
+        toast.className = toast.className.replace(/border-rose-500\/40 text-rose-300/, 'border-yogi-orange\/40 text-yogi-orangeLight');
+        icon.className = 'fa-solid fa-circle-check text-yogi-orange text-lg';
+      }
+
+      toast.classList.remove('translate-y-[-140%]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-[-140%]', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    function formatINR(val) {
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+
+    function copyToClipboard(text) {
+      if (!text) {
+        showToast("કોપી કરવા માટે કોઈ લખાણ નથી!", true);
+        return;
+      }
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast("મેસેજ ક્લિપબોર્ડ પર કોપી થઈ ગયો!");
+    }
+
+    // --- Render: Dashboard ---
+    function renderDashboard() {
+      const totalBookingsCount = bookings.length;
+      const activeLeadsCount = leads.filter(l => l.status !== 'Lost' && l.status !== 'Confirmed').length;
+      const wonLeadsCount = leads.filter(l => l.status === 'Confirmed').length;
+      const conversionRate = leads.length > 0 ? Math.round((wonLeadsCount / leads.length) * 100) : 0;
+
+      let totalGross = 0;
+      let totalCost = 0;
+      let totalAdvance = 0;
+
+      bookings.forEach(b => {
+        totalGross += Number(b.totalCost || 0);
+        totalCost += Number(b.supplierCost || 0);
+        totalAdvance += Number(b.advancePaid || 0);
+      });
+
+      const pendingDue = totalGross - totalAdvance;
+      const netProfit = totalGross - totalCost;
+
+      document.getElementById('stat-total-bookings').innerText = totalBookingsCount;
+      document.getElementById('stat-active-leads').innerText = activeLeadsCount;
+      document.getElementById('stat-leads-conversion').innerText = `${conversionRate}%`;
+      document.getElementById('stat-total-revenue').innerText = formatINR(totalGross);
+      document.getElementById('stat-pending-due').innerText = formatINR(pendingDue);
+      document.getElementById('stat-net-profit').innerText = formatINR(netProfit);
+
+      document.getElementById('badge-leads-count').innerText = leads.length;
+      document.getElementById('badge-bookings-count').innerText = bookings.length;
+      document.getElementById('accounts-total-due-badge').innerText = formatINR(pendingDue);
+
+      const sortedBookings = [...bookings].sort((a,b) => new Date(a.departure) - new Date(b.departure));
+      const tbody = document.getElementById('dashboard-upcoming-tbody');
+      tbody.innerHTML = '';
+
+      if (sortedBookings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">કોઈ આવનારા બુકિંગ ઉપલબ્ધ નથી</td></tr>`;
+      } else {
+        sortedBookings.slice(0, 5).forEach(b => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-dark-800/40 transition';
+          row.innerHTML = `
+            <td class="py-3 font-medium text-slate-200">${b.clientName}</td>
+            <td class="py-3 text-yogi-orangeLight font-semibold">${b.packageName.split(' ')[1] || b.packageName}</td>
+            <td class="py-3 text-slate-300 font-mono">${formatDate(b.departure)}</td>
+            <td class="py-3 text-slate-400">${b.pax}</td>
+            <td class="py-3">
+              <a href="https://wa.me/${b.phone}?text=${encodeURIComponent(`નમસ્તે ${b.clientName}, Yogi Flying World તરફથી. તમારી ${b.packageName} માટેની મુસાફરી નજીક આવી રહી છે.`)}" target="_blank" class="px-2.5 py-1 rounded-md bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600 hover:text-white transition inline-flex items-center gap-1 text-[11px]">
+                <i class="fa-brands fa-whatsapp"></i> Chat
+              </a>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      // Hotspots
+      const destCount = {};
+      leads.forEach(l => {
+        const dest = l.destination.trim();
+        destCount[dest] = (destCount[dest] || 0) + 1;
+      });
+      bookings.forEach(b => {
+        const dest = b.packageName.split(' ')[1] || 'General';
+        destCount[dest] = (destCount[dest] || 0) + 2;
+      });
+
+      const topDestContainer = document.getElementById('top-destinations-list');
+      topDestContainer.innerHTML = '';
+      const sortedDest = Object.entries(destCount).sort((a,b) => b[1] - a[1]).slice(0, 4);
+
+      if (sortedDest.length === 0) {
+        topDestContainer.innerHTML = `<p class="text-xs text-slate-500">No destination data yet.</p>`;
+      } else {
+        sortedDest.forEach(([place, count]) => {
+          const div = document.createElement('div');
+          div.className = 'flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-dark-900 border border-dark-700';
+          div.innerHTML = `
+            <span class="font-medium text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-yogi-orange text-[10px]"></i> ${place}
+            </span>
+            <span class="text-yogi-orange font-bold bg-yogi-orange/10 px-2 py-0.5 rounded-full text-[10px]">${count} inquiries</span>
+          `;
+          topDestContainer.appendChild(div);
+        });
+      }
+    }
+
+    // --- Render: Leads ---
+    function renderLeads() {
+      const container = document.getElementById('leads-container');
+      const searchQuery = (document.getElementById('lead-search')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('lead-status-filter')?.value || 'ALL';
+
+      container.innerHTML = '';
+
+      const filtered = leads.filter(l => {
+        const matchesQuery = l.name.toLowerCase().includes(searchQuery) || 
+                             l.destination.toLowerCase().includes(searchQuery) ||
+                             l.phone.includes(searchQuery);
+        const matchesStatus = statusFilter === 'ALL' || l.status === statusFilter;
+        return matchesQuery && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500 glass-card rounded-2xl">
+            <i class="fa-solid fa-address-book text-3xl mb-2 text-slate-600"></i>
+            <p class="text-sm">કોઈ લીડ્સ મળી નથી (No inquiries found)</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(lead => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-5 border border-dark-700 glass-card-hover transition-all flex flex-col justify-between';
+
+        let badgeColor = 'bg-dark-800 text-slate-300 border-dark-700';
+        if (lead.status === 'New') badgeColor = 'bg-yogi-orange/15 text-yogi-orange border-yogi-orange/30';
+        if (lead.status === 'Quote Sent') badgeColor = 'bg-yogi-purple/20 text-yogi-purpleLight border-yogi-purple/40';
+        if (lead.status === 'Follow-up') badgeColor = 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30';
+        if (lead.status === 'Confirmed') badgeColor = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        if (lead.status === 'Lost') badgeColor = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+
+        const encodedMsg = encodeURIComponent(
+          `નમસ્તે ${lead.name} જી! Yogi Flying World (અમદાવાદ) તરફથી. તમારી ${lead.destination} યાત્રા માટે શ્રેષ્ઠ ક્વોટેશન તૈયાર છે.`
+        );
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500">${lead.id}</span>
+                <h4 class="text-base font-bold text-white">${lead.name}</h4>
+              </div>
+              <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${badgeColor}">
+                ${lead.status}
+              </span>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-300 mb-4">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-map-pin text-yogi-orange w-4"></i>
+                <span class="font-semibold text-white">${lead.destination}</span>
+                <span class="text-slate-500 text-[11px]">(${lead.adults} Ad, ${lead.children} Ch)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-calendar text-slate-400 w-4"></i>
+                <span>Travel: ${formatDate(lead.date)}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-coins text-yogi-orange w-4"></i>
+                <span>Budget: ${lead.budget ? formatINR(lead.budget) : 'Not specified'}</span>
+              </div>
+              ${lead.followUpDate ? `
+                <div class="flex items-center gap-2 text-indigo-300">
+                  <i class="fa-solid fa-clock w-4"></i>
+                  <span>Follow-up: <b>${formatDate(lead.followUpDate)}</b></span>
+                </div>
+              ` : ''}
+              ${lead.notes ? `
+                <p class="text-[11px] text-slate-400 bg-dark-950 p-2 rounded-lg mt-2 italic border border-dark-700">
+                  "${lead.notes}"
+                </p>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-dark-700 flex items-center justify-between gap-2">
+            <a href="https://wa.me/${lead.phone}?text=${encodedMsg}" target="_blank" class="flex-1 py-1.5 px-3 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-center font-semibold text-xs transition flex items-center justify-center gap-1.5">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>WhatsApp</span>
+            </a>
+            <button onclick="editLead('${lead.id}')" class="px-2.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs transition">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
+            <button onclick="convertLeadToBooking('${lead.id}')" class="px-2.5 py-1.5 rounded-lg bg-yogi-orange/20 hover:bg-yogi-orange text-yogi-orange hover:text-slate-950 text-xs transition font-bold" title="Convert to Confirmed Booking">
+              <i class="fa-solid fa-check-double"></i>
+            </button>
+            <button onclick="deleteLead('${lead.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950/30 hover:bg-rose-900/60 text-rose-400 text-xs transition">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- Module 2 Logic: Quotation Generator & Itinerary Builder (YOGI FLYING WORLD BRANDED) ---
+    let quotationItinerary = [
+      { day: 1, title: "Arrival at Dubai & Marina Dhow Cruise Dinner", desc: "Private airport pickup, 4-star hotel check-in, Marina Dhow cruise with lavish international buffet dinner." },
+      { day: 2, title: "Dubai Half Day City Tour & Burj Khalifa (124th Floor)", desc: "Visit Dubai Frame, Jumeirah beach, Burj Khalifa 124th floor observation deck & Dubai Mall fountain show." },
+      { day: 3, title: "Desert Safari with BBQ Dinner & Dune Bashing", desc: "4x4 Land Cruiser Dune bashing, camel safari, belly dance performance, Tanoura show & Arabic BBQ dinner." },
+      { day: 4, title: "Abu Dhabi Day Tour with Grand Mosque & Ferrari World Stop", desc: "Grand Mosque visit, BAPS Hindu Mandir Abu Dhabi, Ferrari World photo stop & return to Dubai." },
+      { day: 5, title: "Dubai Miracle Garden & Departure Drop", desc: "Visit Dubai Miracle garden, souvenir shopping at Gold Souk, airport drop for flight." }
+    ];
+
+    function renderItineraryBuilder() {
+      const container = document.getElementById('itinerary-days-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      quotationItinerary.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'p-2.5 rounded-lg bg-dark-950 border border-dark-700 space-y-1.5';
+        div.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-yogi-orange">Day ${item.day}</span>
+            <button onclick="removeItineraryDay(${index})" class="text-rose-400 hover:text-rose-300 text-[10px]">
+              <i class="fa-solid fa-trash"></i> Remove
+            </button>
+          </div>
+          <input type="text" value="${item.title}" oninput="updateItineraryTitle(${index}, this.value)" placeholder="Day Title..." class="w-full px-2 py-1 text-xs bg-dark-900 border border-dark-700 rounded text-slate-200">
+          <textarea rows="1" oninput="updateItineraryDesc(${index}, this.value)" placeholder="Day highlights..." class="w-full px-2 py-1 text-xs bg-dark-900 border border-dark-700 rounded text-slate-300">${item.desc}</textarea>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addItineraryDay() {
+      const nextDay = quotationItinerary.length + 1;
+      quotationItinerary.push({ day: nextDay, title: `Day ${nextDay} Sightseeing & Leisure`, desc: "Breakfast at hotel, local exploration and leisure." });
+      renderItineraryBuilder();
+      calculateQuote();
+    }
+
+    function removeItineraryDay(idx) {
+      quotationItinerary.splice(idx, 1);
+      quotationItinerary.forEach((d, i) => d.day = i + 1);
+      renderItineraryBuilder();
+      calculateQuote();
+    }
+
+    function updateItineraryTitle(idx, val) {
+      quotationItinerary[idx].title = val;
+      calculateQuote();
+    }
+
+    function updateItineraryDesc(idx, val) {
+      quotationItinerary[idx].desc = val;
+      calculateQuote();
+    }
+
+    function calculateQuote() {
+      const client = document.getElementById('quote-client')?.value || "Valued Client";
+      const dest = document.getElementById('quote-destination')?.value || "Dubai Special Tour";
+      const date = document.getElementById('quote-date')?.value || "2026-11-20";
+
+      const flight = Number(document.getElementById('q-flight')?.value || 0);
+      const hotel = Number(document.getElementById('q-hotel')?.value || 0);
+      const transport = Number(document.getElementById('q-transport')?.value || 0);
+      const activities = Number(document.getElementById('q-activities')?.value || 0);
+      const visa = Number(document.getElementById('q-visa')?.value || 0);
+      const margin = Number(document.getElementById('q-margin')?.value || 0);
+
+      const totalSupplierCost = flight + hotel + transport + activities + visa;
+      const grandTotal = totalSupplierCost + margin;
+
+      document.getElementById('quote-final-tag').innerText = formatINR(grandTotal);
+
+      // Construct Professional Yogi Flying World Branded WhatsApp Itinerary
+      let quoteText = `✈️ *YOGI FLYING WORLD - HOLIDAY PROPOSAL* 🌍\n`;
+      quoteText += `─────────────────────────\n`;
+      quoteText += `👤 *Client Name:* ${client}\n`;
+      quoteText += `📍 *Tour Package:* ${dest}\n`;
+      quoteText += `📅 *Travel Date:* ${formatDate(date)}\n`;
+      quoteText += `─────────────────────────\n\n`;
+      quoteText += `📋 *DAY-WISE ITINERARY OVERVIEW:*\n`;
+
+      quotationItinerary.forEach(d => {
+        quoteText += `\n🔸 *Day ${d.day}: ${d.title}*\n   • ${d.desc}\n`;
+      });
+
+      quoteText += `\n─────────────────────────\n`;
+      quoteText += `✅ *ALL-INCLUSIVE HIGHLIGHTS:*\n`;
+      quoteText += `• Return Flight Tickets & Airport Pick/Drop Transfers\n`;
+      quoteText += `• 4-Star Hotel Stay with Daily Breakfast\n`;
+      quoteText += `• Sightseeing Transfers in Private AC Cab\n`;
+      quoteText += `• Entry Tickets, Taxes & Complete Visa Assistance\n\n`;
+      quoteText += `💰 *TOTAL PACKAGE COST:* ${formatINR(grandTotal)} (All-Inclusive)\n`;
+      quoteText += `─────────────────────────\n`;
+      quoteText += `🏢 *Yogi Flying World*\n`;
+      quoteText += `📍 Ahmedabad, Gujarat, India\n`;
+      quoteText += `Terms: 40% Advance for confirmation, balance 7 days before departure.`;
+
+      const previewBox = document.getElementById('quote-formatted-text');
+      if (previewBox) previewBox.value = quoteText;
+    }
+
+    function sendQuoteWhatsApp() {
+      const phone = document.getElementById('quote-phone')?.value.trim();
+      const text = document.getElementById('quote-formatted-text')?.value.trim();
+
+      if (!phone) {
+        showToast("કૃપા કરીને ક્લાયન્ટનો WhatsApp નંબર નાખો!", true);
+        return;
+      }
+      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
+      showToast("WhatsApp પર ક્વોટેશન શેર થઈ રહ્યું છે...");
+    }
+
+    function loadSampleQuote() {
+      document.getElementById('quote-client').value = "Parthiv Vyas";
+      document.getElementById('quote-phone').value = "919898123456";
+      document.getElementById('quote-destination').value = "5N/6D Dubai Deluxe Vacation";
+      document.getElementById('quote-date').value = "2026-11-20";
+      renderItineraryBuilder();
+      calculateQuote();
+      showToast("સેમ્પલ ક્વોટેશન ડેટા લોડ થઈ ગયો!");
+    }
+
+    function resetQuoteForm() {
+      document.getElementById('quote-client').value = "";
+      document.getElementById('quote-phone').value = "";
+      document.getElementById('quote-destination').value = "";
+      calculateQuote();
+    }
+
+    // --- Render: Bookings ---
+    function renderBookings() {
+      const tbody = document.getElementById('bookings-tbody');
+      tbody.innerHTML = '';
+
+      if (bookings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">કોઈ બુકિંગ્સ નોંધાયેલા નથી</td></tr>`;
+        return;
+      }
+
+      bookings.forEach(b => {
+        const margin = (Number(b.totalCost) || 0) - (Number(b.supplierCost) || 0);
+
+        function badgeStyle(st) {
+          if (st === 'Confirmed' || st === 'Approved') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+          if (st === 'In Progress' || st === 'In Process') return 'bg-yogi-orange/20 text-yogi-orange border-yogi-orange/40';
+          if (st === 'N/A' || st === 'Not Required') return 'bg-dark-800 text-slate-500 border-dark-700';
+          return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+        }
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-dark-900/60 transition border-b border-dark-700/60';
+        row.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-yogi-orange">${b.id}</td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-200">${b.clientName}</div>
+            <div class="text-[11px] text-slate-400 font-mono">${b.phone}</div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-yogi-purpleLight">${b.packageName}</div>
+            <div class="text-[11px] text-slate-400">${b.pax}</div>
+          </td>
+          <td class="py-3 px-4 font-mono">
+            <div>${formatDate(b.departure)}</div>
+            <div class="text-[10px] text-slate-500">to ${formatDate(b.returnDate)}</div>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="grid grid-cols-2 gap-1 text-[9px] max-w-[190px] mx-auto">
+              <span class="px-1.5 py-0.5 rounded border ${badgeStyle(b.flightStatus)}">Air: ${b.flightStatus}</span>
+              <span class="px-1.5 py-0.5 rounded border ${badgeStyle(b.hotelStatus)}">Hotel: ${b.hotelStatus}</span>
+              <span class="px-1.5 py-0.5 rounded border ${badgeStyle(b.cabStatus)}">Cab: ${b.cabStatus}</span>
+              <span class="px-1.5 py-0.5 rounded border ${badgeStyle(b.visaStatus)}">Visa: ${b.visaStatus}</span>
+            </div>
+          </td>
+          <td class="py-3 px-4 text-right">
+            <div class="font-bold text-white">${formatINR(b.totalCost)}</div>
+            <div class="text-[10px] text-emerald-400 font-semibold">Margin: ${formatINR(margin)}</div>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="editBooking('${b.id}')" class="p-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs transition">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+              <button onclick="deleteBooking('${b.id}')" class="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 text-xs transition">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // --- Render: Accounts & Payments ---
+    function renderAccounts() {
+      const tbody = document.getElementById('accounts-tbody');
+      tbody.innerHTML = '';
+
+      if (bookings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">કોઈ પેમેન્ટ રેકોર્ડ ઉપલબ્ધ નથી</td></tr>`;
+        return;
+      }
+
+      bookings.forEach(b => {
+        const total = Number(b.totalCost) || 0;
+        const advance = Number(b.advancePaid) || 0;
+        const balance = total - advance;
+
+        let statusText = 'Fully Paid';
+        let statusBadge = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+
+        if (balance > 0 && advance > 0) {
+          statusText = 'Partially Paid';
+          statusBadge = 'bg-yogi-orange/20 text-yogi-orange border-yogi-orange/30';
+        } else if (balance > 0 && advance === 0) {
+          statusText = 'Unpaid';
+          statusBadge = 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        }
+
+        const reminderMsg = encodeURIComponent(
+          `નમસ્તે ${b.clientName} જી, Yogi Flying World (અમદાવાદ) તરફથી એક નમ્ર યાદી. તમારી ${b.packageName} માટે બાકી રકમ ₹${balance.toLocaleString('en-IN')} ની છેલ્લી તારીખ ${formatDate(b.dueDate)} છે.`
+        );
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-dark-900/60 transition border-b border-dark-700/60';
+        row.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-200">${b.clientName}</td>
+          <td class="py-3 px-4 text-yogi-purpleLight">${b.packageName}</td>
+          <td class="py-3 px-4 text-right font-mono text-slate-200">${formatINR(total)}</td>
+          <td class="py-3 px-4 text-right font-mono text-emerald-400 font-semibold">${formatINR(advance)}</td>
+          <td class="py-3 px-4 text-right font-mono ${balance > 0 ? 'text-rose-400 font-bold' : 'text-slate-400'}">${formatINR(balance)}</td>
+          <td class="py-3 px-4 font-mono text-slate-300">${formatDate(b.dueDate)}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="text-[10px] px-2.5 py-1 rounded-full border ${statusBadge} font-semibold">${statusText}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            ${balance > 0 ? `
+              <a href="https://wa.me/${b.phone}?text=${reminderMsg}" target="_blank" class="px-3 py-1 bg-rose-500/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition">
+                <i class="fa-solid fa-bell"></i> Reminder
+              </a>
+            ` : `
+              <span class="text-[11px] text-slate-500 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i> Clear
+              </span>
+            `}
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // --- Module 5: Hotel & Supplier Management ---
+    function renderSuppliers() {
+      const container = document.getElementById('suppliers-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (suppliers.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">કોઈ સપ્લાયર્સ નથી</div>`;
+        return;
+      }
+
+      suppliers.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-5 border border-dark-700 flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between mb-2">
+              <span class="text-[10px] font-mono text-slate-500">${s.id}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold">${s.type}</span>
+            </div>
+            <h4 class="text-base font-bold text-white">${s.name}</h4>
+            <p class="text-xs text-yogi-orange font-medium mb-3"><i class="fa-solid fa-location-dot mr-1"></i>${s.destination}</p>
+            
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <p><i class="fa-regular fa-user text-slate-400 mr-1.5"></i>Contact: <b>${s.person}</b></p>
+              <p><i class="fa-solid fa-phone text-slate-400 mr-1.5"></i>${s.phone}</p>
+              ${s.notes ? `<p class="text-[11px] text-slate-400 bg-dark-950 p-2 rounded-lg italic mt-2 border border-dark-700">${s.notes}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="pt-3 mt-4 border-t border-dark-700 flex items-center justify-between">
+            <a href="https://wa.me/${s.phone}?text=${encodeURIComponent(`નમસ્તે ${s.person}, Yogi Flying World (અમદાવાદ) તરફથી હોટેલ / સર્વિસ બુકિંગ માટે સંપર્ક કર્યો છે.`)}" target="_blank" class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+              <i class="fa-brands fa-whatsapp"></i> Chat Vendor
+            </a>
+            <button onclick="deleteSupplier('${s.id}')" class="p-1.5 rounded-lg bg-rose-950/30 text-rose-400 hover:bg-rose-900/60 transition">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openSupplierModal() {
+      document.getElementById('supplier-form').reset();
+      document.getElementById('modal-supplier').classList.remove('hidden');
+    }
+    function closeSupplierModal() {
+      document.getElementById('modal-supplier').classList.add('hidden');
+    }
+
+    function saveSupplier(e) {
+      e.preventDefault();
+      const newSup = {
+        id: `YFW-SUP-0${suppliers.length + 1}`,
+        name: document.getElementById('sup-name').value.trim(),
+        type: document.getElementById('sup-type').value,
+        destination: document.getElementById('sup-destination').value.trim(),
+        person: document.getElementById('sup-person').value.trim(),
+        phone: document.getElementById('sup-phone').value.trim(),
+        notes: document.getElementById('sup-notes').value.trim()
+      };
+      suppliers.push(newSup);
+      saveState();
+      closeSupplierModal();
+      showToast("સપ્લાયર વિગતો ઉમેરાઈ ગઈ!");
+    }
+
+    function deleteSupplier(id) {
+      suppliers = suppliers.filter(s => s.id !== id);
+      saveState();
+      showToast("સપ્લાયર ડિલીટ કરવામાં આવ્યો.");
+    }
+
+    // --- Module 6: Vehicle & Fleet Management ---
+    function renderVehicles() {
+      const container = document.getElementById('vehicles-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (vehicles.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">કોઈ વાહન ઉપલબ્ધ નથી</div>`;
+        return;
+      }
+
+      vehicles.forEach(v => {
+        let statusBadge = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+        if (v.status === 'On Duty') statusBadge = 'bg-yogi-orange/20 text-yogi-orange border-yogi-orange/40';
+        if (v.status === 'Maintenance') statusBadge = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-4 border border-dark-700 flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-mono text-slate-400">${v.regNo}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full border ${statusBadge} font-bold">${v.status}</span>
+            </div>
+            <h4 class="text-sm font-bold text-white mb-0.5">${v.model}</h4>
+            <span class="text-[11px] text-yogi-purpleLight block mb-3">${v.type}</span>
+
+            <div class="space-y-1 text-xs text-slate-300">
+              <p><i class="fa-solid fa-id-card text-slate-400 mr-1.5"></i>Driver: <b>${v.driver}</b></p>
+              <p><i class="fa-solid fa-phone text-slate-400 mr-1.5"></i>${v.phone}</p>
+              ${v.route ? `<p class="text-[11px] text-slate-400 bg-dark-950 p-2 rounded-lg mt-2 border border-dark-700 font-mono">📍 ${v.route}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="pt-3 mt-3 border-t border-dark-700 flex items-center justify-between">
+            <a href="https://wa.me/${v.phone}?text=${encodeURIComponent(`નમસ્તે ${v.driver} ભાઈ, Yogi Flying World તરફથી ડ્યુટી અપડેટ.`)}" target="_blank" class="px-2.5 py-1 bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+              <i class="fa-brands fa-whatsapp"></i> Call/Chat
+            </a>
+            <button onclick="deleteVehicle('${v.id}')" class="p-1 rounded-lg bg-rose-950/30 text-rose-400 hover:bg-rose-900/60 transition text-xs">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openVehicleModal() {
+      document.getElementById('vehicle-form').reset();
+      document.getElementById('modal-vehicle').classList.remove('hidden');
+    }
+    function closeVehicleModal() {
+      document.getElementById('modal-vehicle').classList.add('hidden');
+    }
+
+    function saveVehicle(e) {
+      e.preventDefault();
+      const newV = {
+        id: `YFW-VEH-${Math.floor(100 + Math.random() * 900)}`,
+        model: document.getElementById('veh-model').value.trim(),
+        regNo: document.getElementById('veh-reg').value.trim(),
+        type: document.getElementById('veh-type').value,
+        driver: document.getElementById('veh-driver').value.trim(),
+        phone: document.getElementById('veh-driver-phone').value.trim(),
+        status: document.getElementById('veh-status').value,
+        route: document.getElementById('veh-route').value.trim()
+      };
+      vehicles.push(newV);
+      saveState();
+      closeVehicleModal();
+      showToast("વાહન અને ડ્રાઇવર સેવ થયા!");
+    }
+
+    function deleteVehicle(id) {
+      vehicles = vehicles.filter(v => v.id !== id);
+      saveState();
+      showToast("વાહન ડિલીટ કરવામાં આવ્યું.");
+    }
+
+    // --- Module 8: Profit & Loss Reports ---
+    function renderReports() {
+      const tbody = document.getElementById('pl-table-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      let totalGross = 0;
+      let totalCost = 0;
+
+      bookings.forEach(b => {
+        const clientCost = Number(b.totalCost) || 0;
+        const vendorCost = Number(b.supplierCost) || 0;
+        const profit = clientCost - vendorCost;
+        const marginPct = clientCost > 0 ? Math.round((profit / clientCost) * 100) : 0;
+
+        totalGross += clientCost;
+        totalCost += vendorCost;
+
+        const isLowMargin = marginPct < 12;
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-dark-900/60 transition border-b border-dark-700/60';
+        row.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-slate-300">${b.id}</td>
+          <td class="py-3 px-4 font-semibold text-white">${b.clientName}</td>
+          <td class="py-3 px-4 text-yogi-purpleLight">${b.packageName}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-slate-200">${formatINR(clientCost)}</td>
+          <td class="py-3 px-4 text-right font-mono text-rose-300">${formatINR(vendorCost)}</td>
+          <td class="py-3 px-4 text-right font-mono font-extrabold ${profit >= 0 ? 'text-emerald-400' : 'text-rose-500'}">${formatINR(profit)}</td>
+          <td class="py-3 px-4 text-center font-bold ${isLowMargin ? 'text-yogi-orange' : 'text-emerald-400'}">${marginPct}%</td>
+          <td class="py-3 px-4 text-center">
+            ${isLowMargin ? `
+              <span class="px-2 py-0.5 rounded-full bg-yogi-orange/20 text-yogi-orange border border-yogi-orange/30 text-[10px] font-semibold">Low Margin</span>
+            ` : `
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-semibold">Healthy</span>
+            `}
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const netProfit = totalGross - totalCost;
+      const avgMargin = totalGross > 0 ? Math.round((netProfit / totalGross) * 100) : 0;
+
+      document.getElementById('pl-total-sales').innerText = formatINR(totalGross);
+      document.getElementById('pl-total-cogs').innerText = formatINR(totalCost);
+      document.getElementById('pl-net-profit').innerText = formatINR(netProfit);
+      document.getElementById('pl-avg-margin').innerText = `${avgMargin}%`;
+    }
+
+    // --- Modal Controls: Leads ---
+    function openLeadModal(leadData = null) {
+      document.getElementById('lead-form').reset();
+      document.getElementById('lead-id').value = '';
+
+      if (leadData) {
+        document.getElementById('lead-modal-title').innerHTML = '<i class="fa-regular fa-pen-to-square text-yogi-orange"></i> ઈન્ક્વાયરી એડિટ કરો';
+        document.getElementById('lead-id').value = leadData.id;
+        document.getElementById('lead-name').value = leadData.name;
+        document.getElementById('lead-phone').value = leadData.phone;
+        document.getElementById('lead-destination').value = leadData.destination;
+        document.getElementById('lead-date').value = leadData.date;
+        document.getElementById('lead-adults').value = leadData.adults;
+        document.getElementById('lead-children').value = leadData.children;
+        document.getElementById('lead-budget').value = leadData.budget || '';
+        document.getElementById('lead-source').value = leadData.source;
+        document.getElementById('lead-status').value = leadData.status;
+        document.getElementById('lead-followup-date').value = leadData.followUpDate || '';
+        document.getElementById('lead-notes').value = leadData.notes || '';
+      } else {
+        document.getElementById('lead-modal-title').innerHTML = '<i class="fa-solid fa-user-plus text-yogi-orange"></i> નવી લીડ / ઈન્ક્વાયરી ઉમેરો';
+      }
+      document.getElementById('modal-lead').classList.remove('hidden');
+    }
+
+    function closeLeadModal() {
+      document.getElementById('modal-lead').classList.add('hidden');
+    }
+
+    function saveLead(e) {
+      e.preventDefault();
+      const id = document.getElementById('lead-id').value;
+
+      const newLead = {
+        id: id || `YFW-LD-${Math.floor(100 + Math.random() * 900)}`,
+        name: document.getElementById('lead-name').value.trim(),
+        phone: document.getElementById('lead-phone').value.trim(),
+        destination: document.getElementById('lead-destination').value.trim(),
+        date: document.getElementById('lead-date').value,
+        adults: Number(document.getElementById('lead-adults').value) || 1,
+        children: Number(document.getElementById('lead-children').value) || 0,
+        budget: Number(document.getElementById('lead-budget').value) || 0,
+        source: document.getElementById('lead-source').value,
+        status: document.getElementById('lead-status').value,
+        followUpDate: document.getElementById('lead-followup-date').value,
+        notes: document.getElementById('lead-notes').value.trim()
+      };
+
+      if (id) {
+        const index = leads.findIndex(l => l.id === id);
+        if (index !== -1) leads[index] = newLead;
+        showToast("લીડ સફળતાપૂર્વક અપડેટ થઈ!");
+      } else {
+        leads.unshift(newLead);
+        showToast("નવી લીડ સેવ થઈ ગઈ!");
+      }
+
+      saveState();
+      closeLeadModal();
+    }
+
+    function editLead(id) {
+      const l = leads.find(item => item.id === id);
+      if (l) openLeadModal(l);
+    }
+
+    function deleteLead(id) {
+      leads = leads.filter(l => l.id !== id);
+      saveState();
+      showToast("લીડ ડિલીટ કરવામાં આવી.");
+    }
+
+    function convertLeadToBooking(leadId) {
+      const l = leads.find(item => item.id === leadId);
+      if (!l) return;
+
+      openBookingModal({
+        clientName: l.name,
+        phone: l.phone,
+        packageName: `${l.destination} Special Holiday Package`,
+        pax: `${l.adults} Adults, ${l.children} Children`,
+        departure: l.date || new Date().toISOString().split('T')[0],
+        totalCost: l.budget || 50000,
+        supplierCost: Math.round((l.budget || 50000) * 0.8),
+        advancePaid: 0
+      });
+
+      l.status = 'Confirmed';
+      saveState();
+    }
+
+    // --- Modal Controls: Bookings ---
+    function openBookingModal(data = null) {
+      document.getElementById('booking-form').reset();
+      document.getElementById('booking-id').value = '';
+
+      if (data) {
+        document.getElementById('booking-modal-title').innerHTML = '<i class="fa-solid fa-plane-circle-check text-yogi-orange"></i> બુકિંગ એડિટ કરો';
+        document.getElementById('booking-id').value = data.id || '';
+        document.getElementById('booking-client').value = data.clientName || '';
+        document.getElementById('booking-phone').value = data.phone || '';
+        document.getElementById('booking-package').value = data.packageName || '';
+        document.getElementById('booking-pax').value = data.pax || '';
+        document.getElementById('booking-departure').value = data.departure || '';
+        document.getElementById('booking-return').value = data.returnDate || '';
+        document.getElementById('booking-flight').value = data.flightStatus || 'Confirmed';
+        document.getElementById('booking-hotel').value = data.hotelStatus || 'Confirmed';
+        document.getElementById('booking-cab').value = data.cabStatus || 'Confirmed';
+        document.getElementById('booking-visa').value = data.visaStatus || 'N/A';
+        document.getElementById('booking-total-cost').value = data.totalCost || '';
+        document.getElementById('booking-supplier-cost').value = data.supplierCost || '';
+        document.getElementById('booking-advance').value = data.advancePaid || 0;
+        document.getElementById('booking-due-date').value = data.dueDate || '';
+      } else {
+        document.getElementById('booking-modal-title').innerHTML = '<i class="fa-solid fa-plane-circle-check text-yogi-orange"></i> નવું ટૂર બુકિંગ ઉમેરો (New Booking)';
+      }
+
+      document.getElementById('modal-booking').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('modal-booking').classList.add('hidden');
+    }
+
+    function saveBooking(e) {
+      e.preventDefault();
+      const id = document.getElementById('booking-id').value;
+
+      const newBooking = {
+        id: id || `YFW-BK-${Math.floor(8000 + Math.random() * 1000)}`,
+        clientName: document.getElementById('booking-client').value.trim(),
+        phone: document.getElementById('booking-phone').value.trim(),
+        packageName: document.getElementById('booking-package').value.trim(),
+        pax: document.getElementById('booking-pax').value.trim(),
+        departure: document.getElementById('booking-departure').value,
+        returnDate: document.getElementById('booking-return').value,
+        flightStatus: document.getElementById('booking-flight').value,
+        hotelStatus: document.getElementById('booking-hotel').value,
+        cabStatus: document.getElementById('booking-cab').value,
+        visaStatus: document.getElementById('booking-visa').value,
+        totalCost: Number(document.getElementById('booking-total-cost').value) || 0,
+        supplierCost: Number(document.getElementById('booking-supplier-cost').value) || 0,
+        advancePaid: Number(document.getElementById('booking-advance').value) || 0,
+        dueDate: document.getElementById('booking-due-date').value
+      };
+
+      if (id) {
+        const index = bookings.findIndex(b => b.id === id);
+        if (index !== -1) bookings[index] = newBooking;
+        showToast("બુકિંગ વિગતો અપડેટ થઈ ગઈ!");
+      } else {
+        bookings.unshift(newBooking);
+        showToast("નવું બુકિંગ ઉમેરાઈ ગયું!");
+      }
+
+      saveState();
+      closeBookingModal();
+    }
+
+    function editBooking(id) {
+      const b = bookings.find(item => item.id === id);
+      if (b) openBookingModal(b);
+    }
+
+    function deleteBooking(id) {
+      bookings = bookings.filter(b => b.id !== id);
+      saveState();
+      showToast("બુકિંગ રદ્દ કરવામાં આવ્યું.");
+    }
+
+    // --- WhatsApp Templates & Autofill with YOGI FLYING WORLD Footprint ---
+    function populateWhatsAppDropdown() {
+      const select = document.getElementById('wa-client-select');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- Choose Lead or Booking --</option>';
+
+      leads.forEach(l => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify({ name: l.name, phone: l.phone, dest: l.destination, type: 'lead' });
+        opt.innerText = `[Lead] ${l.name} (${l.destination})`;
+        select.appendChild(opt);
+      });
+
+      bookings.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify({ name: b.clientName, phone: b.phone, dest: b.packageName, due: (b.totalCost - b.advancePaid), date: b.departure, type: 'booking' });
+        opt.innerText = `[Booking] ${b.clientName} (${b.packageName})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function autoFillWhatsApp() {
+      const val = document.getElementById('wa-client-select').value;
+      if (!val) return;
+      const data = JSON.parse(val);
+      document.getElementById('wa-phone').value = data.phone;
+    }
+
+    function applyWATemplate(type) {
+      const val = document.getElementById('wa-client-select').value;
+      let data = { name: "ક્લાયન્ટ", dest: "પ્રવાસ", due: "15,000", date: "આવતા સપ્તાહે" };
+      if (val) {
+        data = JSON.parse(val);
+      }
+
+      let msg = "";
+
+      if (type === 'welcome') {
+        msg = `નમસ્તે ${data.name} જી! 🌍✈️\n\n*Yogi Flying World* (અમદાવાદ) તરફથી આપનું હાર્દિક સ્વાગત છે. તમારી ${data.dest || 'ટૂર'} માટેની પૂછપરછ અમને મળી છે.\n\nઅમારી ટીમ તમારી જરૂરિયાત અનુસાર શ્રેષ્ઠ એરલાઇન ટિકિટિંગ, પ્રીમિયમ હોટેલ અને કસ્ટમાઇઝ્ડ હોલિડે પેકેજ પ્લાન કરી રહી છે. અમે થોડી જ વારમાં આપને સંપૂર્ણ પ્લાન મોકલીશું.\n\nઆભાર,\n*Yogi Flying World*\n📞 +91 98250 00000 | Ahmedabad`;
+      } else if (type === 'quote_followup') {
+        msg = `નમસ્તે ${data.name} જી,\n\nઅમે તમને ${data.dest || 'ટૂર'} માટેનું બેસ્ટ ક્વોટેશન મોકલેલ છે. શું તમે તે ચેક કર્યું?\n\nજો તેમાં ફ્લાઇટ ટાઇમિંગ્સ કે હોટેલ કેટેગરીમાં ફેરફાર કરાવવો હોય તો વિના સંકોચે જણાવશો.\n\nસંપર્ક: *Yogi Flying World*, Ahmedabad`;
+      } else if (type === 'payment_reminder') {
+        msg = `નમસ્તે ${data.name} જી,\n\n*Yogi Flying World* તરફથી એક નમ્ર યાદી. તમારી ${data.dest} ટૂર કન્ફર્મેશન માટે બાકી રકમ ₹${data.due || 'Balance'} જમા કરાવવાની બાકી છે.\n\nહોટેલ વાઉચર્સ અને ફ્લાઇટ ટિકિટ્સ સમયસર ઇશ્યુ થાય તે માટે કૃપા કરીને પેમેન્ટ પૂર્ણ કરવા વિનંતી.\n\nઆભાર,\nAccounts Desk, Yogi Flying World`;
+      } else if (type === 'trip_departure') {
+        msg = `હેપ્પી જર્ની ${data.name} જી! 🛫🏖️\n\nતમારી ${data.dest} માટેની મુસાફરી તારીખ ${formatDate(data.date)} થી શરૂ થઈ રહી છે. તમારા બધા વાઉચર્સ અને ફ્લાઇટ ટિકિટ્સ કન્ફર્મ છે.\n\nમુસાફરી દરમિયાન કોઈ પણ ઈમરજન્સી કે સહાય માટે અમારો હેલ્પલાઇન નંબર 24x7 ઉપલબ્ધ રહેશે.\n\nWishing you a safe & memorable journey!\n*Yogi Flying World Team*`;
+      } else if (type === 'review_request') {
+        msg = `નમસ્તે ${data.name} જી, વેલકમ બેક! 🌟\n\nઆશા છે કે તમારી ${data.dest} ની મુસાફરી ખૂબ જ આનંદદાયક અને યાદગાર રહી હશે. *Yogi Flying World* સાથે ટ્રાવેલ કરવા બદલ આપનો ખૂબ ખૂબ આભાર.\n\nઅમારી સેવા અંગે તમારો એક નાનો પ્રતિભાવ (Google Review) અમારા માટે ઘણો મૂલ્યવાન છે. કૃપા કરીને 1 મિનિટ ફાળવી રિવ્યુ શેર કરશો:\n👉 https://g.page/r/yogi-flying-world-review\n\nફરી જલ્દી મળીશું!`;
+      }
+
+      document.getElementById('wa-message-body').value = msg;
+    }
+
+    function sendCustomWhatsApp() {
+      const phone = document.getElementById('wa-phone').value.trim();
+      const text = document.getElementById('wa-message-body').value.trim();
+
+      if (!phone) {
+        showToast("કૃપા કરીને WhatsApp નંબર નાખો!", true);
+        return;
+      }
+      if (!text) {
+        showToast("મેસેજ બોડી ખાલી છે!", true);
+        return;
+      }
+
+      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      showToast("WhatsApp શરૂ થઈ રહ્યું છે...");
+    }
+
+    // --- Export & Reset Data ---
+    function exportDataJSON() {
+      const data = {
+        agency: "Yogi Flying World",
+        leads: leads,
+        bookings: bookings,
+        suppliers: suppliers,
+        vehicles: vehicles,
+        exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Yogi_Flying_World_CRM_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Yogi Flying World નો ડેટા બેકઅપ ડાઉનલોડ થઈ ગયો!");
+    }
+
+    function resetDefaultData() {
+      leads = [...DEFAULT_LEADS];
+      bookings = [...DEFAULT_BOOKINGS];
+      suppliers = [...DEFAULT_SUPPLIERS];
+      vehicles = [...DEFAULT_VEHICLES];
+      saveState();
+      showToast("તમામ મોડ્યુલ્સનો સેમ્પલ ડેટા રિસેટ થઈ ગયો!");
+    }
+
+    // --- Window Load Init ---
+    window.onload = function() {
+      // Check for previously saved custom logo
+      const savedLogo = localStorage.getItem('yfw_custom_logo');
+      if (savedLogo) {
+        const logoImg = document.getElementById('custom-logo-img');
+        const defaultIcon = document.getElementById('default-brand-icon');
+        if (logoImg && defaultIcon) {
+          logoImg.src = savedLogo;
+          logoImg.classList.remove('hidden');
+          defaultIcon.classList.add('hidden');
+        }
+      }
+
+      saveState();
+      renderItineraryBuilder();
+      calculateQuote();
+    };
+
+    // --- Custom Logo Upload Handler ---
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        localStorage.setItem('yfw_custom_logo', dataUrl);
+        const logoImg = document.getElementById('custom-logo-img');
+        const defaultIcon = document.getElementById('default-brand-icon');
+        if (logoImg && defaultIcon) {
+          logoImg.src = dataUrl;
+          logoImg.classList.remove('hidden');
+          defaultIcon.classList.add('hidden');
+        }
+        showToast("તમારો ઓરિજિનલ લોગો સેટ થઈ ગયો!");
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
