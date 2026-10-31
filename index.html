@@ -32,7 +32,7 @@
     }
   </script>
   <style>
-    body { background-color: #0B0D13; color: #F8FAFC; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    body { background-color: #0B0D13; color: #F8FAFC; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scroll::-webkit-scrollbar-track { background: #0B0D13; }
     .custom-scroll::-webkit-scrollbar-thumb { background: #262E48; border-radius: 9999px; }
@@ -58,7 +58,7 @@
       <div>
         <h1 class="text-xl font-black tracking-wider uppercase text-white flex items-center gap-2">
           <span>YOGI FLYING WORLD</span>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 font-medium">erp</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 font-medium">pro erp</span>
         </h1>
         <p class="text-[11px] text-brand-textMuted font-medium">Ahmedabad • Travel Agency Operations</p>
       </div>
@@ -75,7 +75,7 @@
         <span id="sheetBadgeText">Connect Sheet</span>
       </button>
 
-      <button onclick="triggerSheetSyncAll()" class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30 transition flex items-center gap-1.5" title="Push non-synced data to Google Sheet">
+      <button onclick="triggerSheetSyncAll()" class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30 transition flex items-center gap-1.5" title="Smart Sync to Google Sheets">
         <i class="fa-solid fa-arrows-rotate"></i>
         <span>Smart Sync</span>
       </button>
@@ -167,7 +167,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Inquiries & Leads</h2>
-          <p class="text-xs text-brand-textMuted">Capture client requests and convert directly into confirmed bookings</p>
+          <p class="text-xs text-brand-textMuted">Capture inquiries and convert directly into confirmed bookings</p>
         </div>
         <button onclick="openLeadModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
           <i class="fa-solid fa-user-plus"></i> Add Lead
@@ -193,12 +193,12 @@
       </div>
     </section>
 
-    <!-- 3. CONFIRMED BOOKINGS (NEW DEDICATED MODULE) -->
+    <!-- 3. CONFIRMED BOOKINGS (WITH DELETE OPTION) -->
     <section id="tab-confirmed" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-emerald-400">Confirmed Travel Bookings</h2>
-          <p class="text-xs text-brand-textMuted">All finalized tours converted from inquiries or quotations</p>
+          <p class="text-xs text-brand-textMuted">Finalized tour bookings with payment status and delete management</p>
         </div>
       </div>
 
@@ -211,9 +211,10 @@
               <th class="p-3">Destination</th>
               <th class="p-3">Departure Date</th>
               <th class="p-3">Total Amount</th>
-              <th class="p-3">Advance Paid</th>
+              <th class="p-3">Advance</th>
               <th class="p-3">Balance</th>
               <th class="p-3">Status</th>
+              <th class="p-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody id="confirmedTableBody" class="divide-y divide-brand-cardBorder"></tbody>
@@ -221,68 +222,122 @@
       </div>
     </section>
 
-    <!-- 4. QUOTATION GENERATOR -->
+    <!-- 4. ADVANCED QUOTATION GENERATOR -->
     <section id="tab-quotation" class="hidden space-y-6">
-      <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
-        <h2 class="text-xl font-black text-white mb-1">Interactive Quotation Builder</h2>
-        <p class="text-xs text-brand-textMuted mb-6">Create customized day-wise proposals and calculate instant profitability</p>
+      <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder space-y-6">
+        <div>
+          <h2 class="text-xl font-black text-white mb-1">Advanced Travel Quotation Builder</h2>
+          <p class="text-xs text-brand-textMuted">Detailed pax calculation, hotel tier, meal plans, GST, and per-head costing</p>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label class="text-xs font-semibold text-gray-300">Client Name</label>
-            <input type="text" id="quoteClient" placeholder="e.g. Ketan Soni" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="quoteClient" placeholder="e.g. Ketan Soni" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none focus:border-brand-purple">
           </div>
           <div>
-            <label class="text-xs font-semibold text-gray-300">Client Phone (with country code)</label>
-            <input type="text" id="quotePhone" placeholder="e.g. 919825000000" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <label class="text-xs font-semibold text-gray-300">WhatsApp Phone (with Country Code)</label>
+            <input type="text" id="quotePhone" placeholder="e.g. 919825000000" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none focus:border-brand-purple">
           </div>
           <div>
             <label class="text-xs font-semibold text-gray-300">Destination & Duration</label>
-            <input type="text" id="quoteDest" placeholder="e.g. Thailand 5N/6D" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="quoteDest" placeholder="e.g. Thailand - Phuket & Krabi 5N/6D" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none focus:border-brand-purple">
           </div>
         </div>
 
-        <div class="space-y-3 mb-6">
+        <!-- Passengers, Hotel & Meal Selection -->
+        <div class="p-4 rounded-xl bg-brand-input/70 border border-brand-cardBorder grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div>
+            <label class="text-xs text-brand-textMuted">Adults (12+ yrs)</label>
+            <input type="number" id="paxAdults" value="2" min="1" oninput="calculateQuoteTotal()" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-brand-textMuted">Children (2-11 yrs)</label>
+            <input type="number" id="paxKids" value="0" min="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-brand-textMuted">Infants (0-2 yrs)</label>
+            <input type="number" id="paxInfants" value="0" min="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-brand-textMuted">Hotel Category</label>
+            <select id="quoteHotelCat" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-xs outline-none">
+              <option value="3-Star Deluxe">3-Star Deluxe</option>
+              <option value="4-Star Premium" selected>4-Star Premium</option>
+              <option value="5-Star Luxury">5-Star Luxury</option>
+              <option value="Private Pool Villa">Private Pool Villa</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-brand-textMuted">Meal Plan</label>
+            <select id="quoteMealPlan" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-xs outline-none">
+              <option value="CP - Breakfast Included" selected>CP (Breakfast Only)</option>
+              <option value="MAP - Breakfast & Dinner">MAP (Half Board)</option>
+              <option value="AP - All Meals Included">AP (Full Board)</option>
+              <option value="EP - Room Only">EP (Room Only)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Day-wise Itinerary Rows -->
+        <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Day-Wise Itinerary Plan</h3>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-map-location-dot text-brand-orange"></i> Day-Wise Itinerary Plan
+            </h3>
             <button onclick="addItineraryDayRow()" class="text-xs text-brand-orange hover:underline font-bold flex items-center gap-1">
               <i class="fa-solid fa-plus"></i> Add Next Day
             </button>
           </div>
-          <div id="itineraryDaysList" class="space-y-3"></div>
+          <div id="itineraryDaysList" class="space-y-2"></div>
         </div>
 
-        <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder grid grid-cols-2 md:grid-cols-5 gap-3 text-xs mb-6">
-          <div>
-            <label class="text-brand-textMuted">Flights (₹)</label>
-            <input type="number" id="costFlight" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+        <!-- Costing Breakdown & GST Toggle -->
+        <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label class="text-brand-textMuted">Total Flights (₹)</label>
+              <input type="number" id="costFlight" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+            </div>
+            <div>
+              <label class="text-brand-textMuted">Hotel & Meals (₹)</label>
+              <input type="number" id="costHotel" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+            </div>
+            <div>
+              <label class="text-brand-textMuted">Cabs & Transfers (₹)</label>
+              <input type="number" id="costCab" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+            </div>
+            <div>
+              <label class="text-brand-textMuted">Visa & Insurance (₹)</label>
+              <input type="number" id="costVisa" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
+            </div>
+            <div>
+              <label class="text-brand-orange font-bold">Markup Profit (₹)</label>
+              <input type="number" id="costMargin" value="5000" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-orange text-brand-orange font-bold text-sm outline-none">
+            </div>
           </div>
-          <div>
-            <label class="text-brand-textMuted">Hotel & Meals (₹)</label>
-            <input type="number" id="costHotel" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
-          </div>
-          <div>
-            <label class="text-brand-textMuted">Cab & Transfer (₹)</label>
-            <input type="number" id="costCab" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
-          </div>
-          <div>
-            <label class="text-brand-textMuted">Visa & Taxes (₹)</label>
-            <input type="number" id="costVisa" value="0" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-cardBorder text-white text-sm outline-none">
-          </div>
-          <div>
-            <label class="text-brand-orange font-bold">Margin / Profit (₹)</label>
-            <input type="number" id="costMargin" value="5000" oninput="calculateQuoteTotal()" class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-brand-card border border-brand-orange text-brand-orange font-bold text-sm outline-none">
+
+          <div class="flex items-center justify-between pt-2 border-t border-brand-cardBorder">
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+              <input type="checkbox" id="quoteIncludeGst" onchange="calculateQuoteTotal()" class="rounded bg-brand-card text-brand-orange focus:ring-0">
+              <span>Apply 5% Travel GST on Final Price</span>
+            </label>
+            <div id="gstAmountLabel" class="text-xs text-brand-textMuted font-mono">GST: ₹0</div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-brand-purple/20 border border-brand-purple/40">
+        <!-- Total Quote Preview & Actions -->
+        <div class="flex flex-wrap items-center justify-between gap-4 p-5 rounded-xl bg-brand-purple/20 border border-brand-purple/40">
           <div>
-            <p class="text-xs text-brand-textMuted">Grand Total</p>
-            <h4 id="quoteGrandTotal" class="text-3xl font-black text-white">₹0</h4>
+            <p class="text-xs text-brand-textMuted">Client Total Quote (All-inclusive)</p>
+            <div class="flex items-baseline gap-3">
+              <h4 id="quoteGrandTotal" class="text-3xl font-black text-white">₹0</h4>
+              <span id="quotePerPaxTotal" class="text-xs text-brand-orangeLight font-medium font-mono">(₹0 / person)</span>
+            </div>
           </div>
           <div class="flex flex-wrap gap-2">
             <button onclick="generateWhatsAppQuote()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold flex items-center gap-2 transition">
-              <i class="fa-brands fa-whatsapp text-lg"></i> Share Quote
+              <i class="fa-brands fa-whatsapp text-lg"></i> Send WhatsApp Proposal
             </button>
             <button onclick="saveQuotationAsBooking()" class="px-5 py-2.5 rounded-xl bg-brand-purple hover:bg-brand-purpleHover text-white text-sm font-bold flex items-center gap-2 transition">
               <i class="fa-solid fa-check"></i> Convert to Booking
@@ -297,7 +352,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Tours & Operations Checklist</h2>
-          <p class="text-xs text-brand-textMuted">Track vouchers, flights, cabs and visa status</p>
+          <p class="text-xs text-brand-textMuted">Track vouchers, flights, cabs, and visa status</p>
         </div>
       </div>
       <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder overflow-x-auto">
@@ -319,12 +374,12 @@
       </div>
     </section>
 
-    <!-- 6. ACCOUNTS & PAYMENTS -->
+    <!-- 6. ACCOUNTS & PAYMENTS (WITH DIRECT EDIT OPTION) -->
     <section id="tab-accounts" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Client Accounts & Ledgers</h2>
-          <p class="text-xs text-brand-textMuted">Track advances, balances, and send payment reminders</p>
+          <p class="text-xs text-brand-textMuted">Directly update payments, advances, and due dates</p>
         </div>
       </div>
       <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder overflow-x-auto">
@@ -335,9 +390,9 @@
               <th class="p-3">Client Name</th>
               <th class="p-3">Total Amount</th>
               <th class="p-3">Advance</th>
-              <th class="p-3">Balance</th>
+              <th class="p-3">Balance Due</th>
               <th class="p-3">Due Date</th>
-              <th class="p-3 text-right">Reminder</th>
+              <th class="p-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody id="accountsTableBody" class="divide-y divide-brand-cardBorder"></tbody>
@@ -345,12 +400,12 @@
       </div>
     </section>
 
-    <!-- 7. SUPPLIERS & DMC (WITH WORKING MODAL) -->
+    <!-- 7. SUPPLIERS & DMC (WITH DELETE) -->
     <section id="tab-suppliers" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Hotel & B2B Suppliers Directory</h2>
-          <p class="text-xs text-brand-textMuted">DMCs, Wholesalers, Flight Desks, and Land Operators</p>
+          <p class="text-xs text-brand-textMuted">DMCs, Wholesalers, Flight Desks, and Land Partners</p>
         </div>
         <button onclick="openSupplierModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
           <i class="fa-solid fa-plus"></i> Add Supplier
@@ -366,6 +421,7 @@
               <th class="p-3">Contact Person</th>
               <th class="p-3">Phone</th>
               <th class="p-3">Contract Rate / Notes</th>
+              <th class="p-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody id="suppliersTableBody" class="divide-y divide-brand-cardBorder"></tbody>
@@ -373,7 +429,7 @@
       </div>
     </section>
 
-    <!-- 8. FLEET & CABS (WITH WORKING MODAL) -->
+    <!-- 8. FLEET & CABS (WITH DELETE) -->
     <section id="tab-fleet" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -394,6 +450,7 @@
               <th class="p-3">Driver Phone</th>
               <th class="p-3">Route / Trip</th>
               <th class="p-3">Status</th>
+              <th class="p-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody id="fleetTableBody" class="divide-y divide-brand-cardBorder"></tbody>
@@ -401,51 +458,112 @@
       </div>
     </section>
 
-    <!-- 9. WHATSAPP HUB -->
+    <!-- 9. WHATSAPP HUB (WITH REVIEW REQUEST ADDED) -->
     <section id="tab-whatsapp" class="hidden space-y-6">
       <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
-        <h2 class="text-xl font-black text-white mb-1">WhatsApp Communication Center</h2>
-        <p class="text-xs text-brand-textMuted mb-6">Send personalized messages directly from Yogi Flying World</p>
+        <h2 class="text-xl font-black text-white mb-1">WhatsApp Automation & Message Center</h2>
+        <p class="text-xs text-brand-textMuted mb-6">One-click customer messaging with personalized agency templates</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- 1. Inquiry Welcome -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-2.5">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="fa-brands fa-whatsapp text-emerald-400"></i> Inquiry Welcome Greeting
             </h4>
-            <p class="text-xs text-brand-textMuted">Namaste! Thank you for inquiring with Yogi Flying World, Ahmedabad...</p>
-            <button onclick="triggerQuickWhatsApp('Namaste! Thank you for connecting with Yogi Flying World, Ahmedabad. We have received your holiday inquiry and are curating the best package for you.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Welcome Message</button>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Namaste! Thank you for inquiring with Yogi Flying World, Ahmedabad...</p>
+            <button onclick="triggerQuickWhatsApp('Namaste! Thank you for connecting with Yogi Flying World, Ahmedabad. We have received your holiday inquiry and our team is curating the best itinerary for you.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Welcome</button>
           </div>
 
-          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
+          <!-- 2. Payment Reminder -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-2.5">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="fa-brands fa-whatsapp text-emerald-400"></i> Balance Payment Reminder
             </h4>
-            <p class="text-xs text-brand-textMuted">Greetings from Yogi Flying World! Kindly clear your balance payment...</p>
-            <button onclick="triggerQuickWhatsApp('Greetings from Yogi Flying World! Kindly complete your remaining tour payment to ensure smooth voucher and flight ticket issuance.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Payment Reminder</button>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Greetings from Yogi Flying World! Kindly clear your balance payment...</p>
+            <button onclick="triggerQuickWhatsApp('Greetings from Yogi Flying World! Kindly complete your remaining tour payment to ensure smooth voucher and flight ticket issuance. Thank you!')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Payment Reminder</button>
+          </div>
+
+          <!-- 3. Vouchers & Tickets -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-2.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Tour Vouchers Delivery
+            </h4>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Congratulations! Your holiday package with Yogi Flying World is confirmed...</p>
+            <button onclick="triggerQuickWhatsApp('Congratulations! Your holiday package with Yogi Flying World is confirmed. Your flight tickets, hotel vouchers, and transport contacts have been dispatched. Have a wonderful trip!')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Vouchers</button>
+          </div>
+
+          <!-- 4. Mid-Trip Check-in -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-2.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Mid-Tour Care Greeting
+            </h4>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Hello from Yogi Flying World! We hope you are having an amazing time...</p>
+            <button onclick="triggerQuickWhatsApp('Namaste from Team Yogi Flying World! Hope you are having an enjoyable tour experience. Please feel free to reach out to our 24x7 support desk if you need anything!')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Care Greeting</button>
+          </div>
+
+          <!-- 5. Visa Approved Notice -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-2.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Visa Approval Alert
+            </h4>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Great news! Your travel visa has been successfully approved...</p>
+            <button onclick="triggerQuickWhatsApp('Great news from Yogi Flying World! Your tourist visa has been successfully approved and issued. Your finalized travel documents are being organized.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Visa Alert</button>
+          </div>
+
+          <!-- 6. Review & Feedback Request (NEW) -->
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-orange/40 space-y-2.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-star text-yellow-400"></i> Google Review & Feedback
+            </h4>
+            <p class="text-xs text-brand-textMuted line-clamp-2">Welcome back home! Team Yogi Flying World hopes you had a memorable journey...</p>
+            <button onclick="triggerQuickWhatsApp('Welcome back home! Team Yogi Flying World hopes you had a memorable and hassle-free journey. If you enjoyed our services, we would truly appreciate your 5-star review on Google! Your review motivates us to serve you better. Thank you!')" class="w-full py-2 rounded-lg bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold transition">Send Review Request</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 10. PROFIT & LOSS -->
+    <!-- 10. PROFIT & LOSS ANALYTICS -->
     <section id="tab-pnl" class="hidden space-y-6">
-      <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
-        <h2 class="text-xl font-black text-white mb-1">Profit & Loss (P&L) Analytics</h2>
-        <p class="text-xs text-brand-textMuted mb-6">Real-time financial performance and margins</p>
+      <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder space-y-6">
+        <div>
+          <h2 class="text-xl font-black text-white mb-1">Profit & Loss (P&L) Analytics</h2>
+          <p class="text-xs text-brand-textMuted">Complete financial overview, vendor cost breakdown, and net profit margins</p>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder">
-            <span class="text-xs text-brand-textMuted">Total Sales Turnover</span>
+            <span class="text-xs text-brand-textMuted">Gross Package Sales</span>
             <h3 id="pnlTurnover" class="text-2xl font-black text-white mt-1">₹0</h3>
           </div>
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder">
-            <span class="text-xs text-brand-textMuted">Total Vendor Costs (COGS)</span>
+            <span class="text-xs text-brand-textMuted">Total Vendor Cost (COGS)</span>
             <h3 id="pnlCosts" class="text-2xl font-black text-rose-400 mt-1">₹0</h3>
           </div>
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder">
-            <span class="text-xs text-brand-orange font-bold">Net Operating Profit</span>
+            <span class="text-xs text-brand-orange font-bold">Net Agency Profit</span>
             <h3 id="pnlNetProfit" class="text-2xl font-black text-emerald-400 mt-1">₹0</h3>
           </div>
+          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder">
+            <span class="text-xs text-brand-textMuted font-medium">Avg Profit Margin</span>
+            <h3 id="pnlAvgMargin" class="text-2xl font-black text-sky-400 mt-1">0%</h3>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-brand-textMuted">
+            <thead class="text-xs uppercase bg-brand-input text-gray-300 border-b border-brand-cardBorder">
+              <tr>
+                <th class="p-3">Booking ID</th>
+                <th class="p-3">Client</th>
+                <th class="p-3">Package Price</th>
+                <th class="p-3">Vendor Cost</th>
+                <th class="p-3">Net Profit</th>
+                <th class="p-3">Margin %</th>
+                <th class="p-3">Performance</th>
+              </tr>
+            </thead>
+            <tbody id="pnlTableBody" class="divide-y divide-brand-cardBorder"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -512,16 +630,50 @@
     </div>
   </div>
 
-  <!-- 3. Add Supplier Modal -->
+  <!-- 3. Edit Payment Modal (NEW) -->
+  <div id="paymentModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-white">Edit Client Payment</h3>
+        <button onclick="closePaymentModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handlePaymentUpdate(event)" class="space-y-3">
+        <input type="hidden" id="editPaymentBookingId">
+        <div>
+          <label class="text-xs text-gray-300">Client Name</label>
+          <input type="text" id="editPaymentClient" readonly class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-card border border-brand-cardBorder text-gray-400 text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Total Tour Amount (₹)</label>
+          <input type="number" id="editPaymentTotal" oninput="calculateEditBalance()" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Advance Received (₹)</label>
+          <input type="number" id="editPaymentAdvance" oninput="calculateEditBalance()" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Balance Pending (₹)</label>
+          <input type="number" id="editPaymentBalance" readonly class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-card border border-brand-cardBorder text-rose-400 font-bold text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Payment Due Date</label>
+          <input type="date" id="editPaymentDueDate" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-purple hover:bg-brand-purpleHover text-white text-sm font-bold transition">Update Payment Record</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add Supplier Modal -->
   <div id="supplierModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-white">Add New Supplier / DMC</h3>
+        <h3 class="text-lg font-bold text-white">Add Supplier / DMC</h3>
         <button onclick="closeSupplierModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="handleSupplierSubmit(event)" class="space-y-3">
         <div>
-          <label class="text-xs text-gray-300">Company / Vendor Name</label>
+          <label class="text-xs text-gray-300">Company Name</label>
           <input type="text" id="supName" required placeholder="e.g. Siam DMC Ltd" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div>
@@ -531,68 +683,67 @@
             <option value="Hotel Wholesaler">Hotel Wholesaler</option>
             <option value="Flight Desk">Flight Desk</option>
             <option value="Visa Provider">Visa Provider</option>
-            <option value="Cruise & Rail">Cruise & Rail</option>
           </select>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-xs text-gray-300">Market / Destination</label>
+            <label class="text-xs text-gray-300">Market</label>
             <input type="text" id="supMarket" required placeholder="e.g. Dubai, Bali" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
           <div>
             <label class="text-xs text-gray-300">Contact Person</label>
-            <input type="text" id="supPerson" placeholder="e.g. Rahul" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="supPerson" placeholder="Rahul" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
         </div>
         <div>
-          <label class="text-xs text-gray-300">Phone / WhatsApp</label>
+          <label class="text-xs text-gray-300">Phone</label>
           <input type="text" id="supPhone" required placeholder="+91..." class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div>
           <label class="text-xs text-gray-300">Contract Rate / Notes</label>
-          <input type="text" id="supNotes" placeholder="e.g. 10% credit net 15 days" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          <input type="text" id="supNotes" placeholder="Credit terms, special rates" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold transition">Save Supplier</button>
       </form>
     </div>
   </div>
 
-  <!-- 4. Add Fleet Modal -->
+  <!-- 5. Add Fleet Modal -->
   <div id="fleetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-white">Add Cab / Vehicle</h3>
+        <h3 class="text-lg font-bold text-white">Add Vehicle / Cab</h3>
         <button onclick="closeFleetModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="handleFleetSubmit(event)" class="space-y-3">
         <div>
-          <label class="text-xs text-gray-300">Vehicle Type</label>
+          <label class="text-xs text-gray-300">Vehicle Model</label>
           <input type="text" id="fleetType" required placeholder="e.g. Innova Crysta, Urbania" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div>
           <label class="text-xs text-gray-300">Plate Number</label>
-          <input type="text" id="fleetPlate" required placeholder="e.g. GJ-01-XX-1234" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          <input type="text" id="fleetPlate" required placeholder="GJ-01-XX-1234" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-xs text-gray-300">Driver Name</label>
-            <input type="text" id="fleetDriver" required placeholder="e.g. Ramesh Bhai" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="fleetDriver" required placeholder="Ramesh Bhai" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
           <div>
             <label class="text-xs text-gray-300">Driver Phone</label>
-            <input type="text" id="fleetPhone" required placeholder="e.g. 9825..." class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="fleetPhone" required placeholder="9825..." class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
         </div>
         <div>
-          <label class="text-xs text-gray-300">Assigned Route / City</label>
-          <input type="text" id="fleetRoute" placeholder="e.g. Ahmedabad Airport - SOU" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          <label class="text-xs text-gray-300">Route / City</label>
+          <input type="text" id="fleetRoute" placeholder="Ahmedabad - SOU - Diu" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold transition">Save Vehicle</button>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCatznRYEyNCEPRB0Q_UGiHw78KqLOnFxU",
@@ -609,7 +760,7 @@
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
     } catch(e) {
-      console.warn("Firebase fallback:", e);
+      console.warn("Firebase offline or local fallback:", e);
     }
 
     let crmData = {
@@ -629,13 +780,13 @@
       ]
     };
 
-    const savedLocal = localStorage.getItem('yfw_crm_data_v2');
+    const savedLocal = localStorage.getItem('yfw_crm_data_v3');
     if (savedLocal) {
       try { crmData = JSON.parse(savedLocal); } catch(e){}
     }
 
     function persistData() {
-      localStorage.setItem('yfw_crm_data_v2', JSON.stringify(crmData));
+      localStorage.setItem('yfw_crm_data_v3', JSON.stringify(crmData));
       if (db) {
         db.collection("crm_store").doc("main_data").set(crmData).catch(e => console.warn(e));
       }
@@ -659,7 +810,6 @@
       }
     }
 
-    // Google Sheets Push using text/plain to bypass CORS
     async function pushToGoogleSheet(sheetName, headers, rowData) {
       const scriptUrl = getSheetUrl();
       if (!scriptUrl) return false;
@@ -678,7 +828,6 @@
       }
     }
 
-    // Smart Sync: Only sync items that have NOT been synced yet (Eliminating duplicates)
     async function triggerSheetSyncAll() {
       const url = getSheetUrl();
       if (!url) {
@@ -688,7 +837,6 @@
 
       let count = 0;
 
-      // 1. Leads
       for (const l of crmData.leads) {
         if (!l.synced) {
           await pushToGoogleSheet("Leads", ["Lead ID", "Date", "Client Name", "Phone", "Destination", "Pax", "Budget", "Status"], [l.id, l.date, l.name, l.phone, l.dest, l.pax, l.budget, l.status]);
@@ -697,7 +845,6 @@
         }
       }
 
-      // 2. Bookings
       for (const b of crmData.bookings) {
         if (!b.synced) {
           await pushToGoogleSheet("Bookings", ["Booking ID", "Client Name", "Destination", "Departure", "Total", "Advance", "Balance", "Margin", "Status"], [b.id, b.client, b.dest, b.dept, b.total, b.advance, b.balance, b.margin, b.status]);
@@ -706,7 +853,6 @@
         }
       }
 
-      // 3. Suppliers
       for (const s of crmData.suppliers) {
         if (!s.synced) {
           await pushToGoogleSheet("Suppliers", ["Vendor Name", "Category", "Market", "Contact Person", "Phone", "Notes"], [s.name, s.cat, s.market, s.person, s.phone, s.notes]);
@@ -715,7 +861,6 @@
         }
       }
 
-      // 4. Fleet
       for (const f of crmData.fleet) {
         if (!f.synced) {
           await pushToGoogleSheet("Fleet_Cabs", ["Vehicle Type", "Plate No.", "Driver Name", "Driver Phone", "Route", "Status"], [f.type, f.plate, f.driver, f.phone, f.route, f.status]);
@@ -728,7 +873,7 @@
       if (count > 0) {
         alert(`Smart Sync Complete! ${count} new records added to Google Sheets.`);
       } else {
-        alert("All records are already synced! No duplicates created.");
+        alert("All records are already up to date in Google Sheets!");
       }
     }
 
@@ -767,7 +912,7 @@
           <td class="p-3 text-right space-x-2">
             ${l.status !== 'Confirmed' ? `<button onclick="convertLeadToBooking(${idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"><i class="fa-solid fa-check"></i> Confirm</button>` : ''}
             <a href="https://wa.me/${l.phone}" target="_blank" class="text-emerald-400 p-1"><i class="fa-brands fa-whatsapp text-base"></i></a>
-            <button onclick="deleteLead(${idx})" class="text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+            <button onclick="deleteLead(${idx})" class="text-rose-400 p-1 hover:text-rose-300"><i class="fa-solid fa-trash-can"></i></button>
           </td>
         </tr>
       `).join('');
@@ -775,7 +920,7 @@
 
     function renderConfirmedBookings() {
       const tbody = document.getElementById('confirmedTableBody');
-      tbody.innerHTML = crmData.bookings.map(b => `
+      tbody.innerHTML = crmData.bookings.map((b, idx) => `
         <tr class="hover:bg-brand-cardBorder/40">
           <td class="p-3 font-mono font-bold text-emerald-400">${b.id}</td>
           <td class="p-3 font-bold text-white">${b.client}</td>
@@ -785,6 +930,11 @@
           <td class="p-3 text-emerald-400">₹${Number(b.advance).toLocaleString('en-IN')}</td>
           <td class="p-3 text-rose-400 font-bold">₹${Number(b.balance).toLocaleString('en-IN')}</td>
           <td class="p-3"><span class="px-2.5 py-0.5 rounded-full text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">${b.status}</span></td>
+          <td class="p-3 text-right">
+            <button onclick="deleteBooking(${idx})" class="p-1.5 rounded-lg text-rose-400 hover:text-white hover:bg-rose-500/20 transition" title="Delete Booking">
+              <i class="fa-solid fa-trash-can text-sm"></i>
+            </button>
+          </td>
         </tr>
       `).join('');
     }
@@ -807,7 +957,7 @@
 
     function renderAccounts() {
       const tbody = document.getElementById('accountsTableBody');
-      tbody.innerHTML = crmData.bookings.map(b => `
+      tbody.innerHTML = crmData.bookings.map((b, idx) => `
         <tr class="hover:bg-brand-cardBorder/40">
           <td class="p-3 font-mono text-brand-orange">${b.id}</td>
           <td class="p-3 font-bold text-white">${b.client}</td>
@@ -815,8 +965,11 @@
           <td class="p-3 text-emerald-400 font-semibold">₹${Number(b.advance || 0).toLocaleString('en-IN')}</td>
           <td class="p-3 text-rose-400 font-black">₹${Number(b.balance || 0).toLocaleString('en-IN')}</td>
           <td class="p-3">${b.dueDate || 'Immediate'}</td>
-          <td class="p-3 text-right">
-            <button onclick="sendBalanceReminder('${b.client}', '${b.balance}', '${b.dueDate}')" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+          <td class="p-3 text-right space-x-2">
+            <button onclick="openPaymentModal(${idx})" class="px-2.5 py-1 rounded bg-brand-purple hover:bg-brand-purpleHover text-white text-xs font-bold transition">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+            <button onclick="sendBalanceReminder('${b.client}', '${b.balance}', '${b.dueDate}')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
               <i class="fa-brands fa-whatsapp"></i> Remind
             </button>
           </td>
@@ -826,7 +979,7 @@
 
     function renderSuppliers() {
       const tbody = document.getElementById('suppliersTableBody');
-      tbody.innerHTML = crmData.suppliers.map(s => `
+      tbody.innerHTML = crmData.suppliers.map((s, idx) => `
         <tr class="hover:bg-brand-cardBorder/40">
           <td class="p-3 font-bold text-white">${s.name}</td>
           <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-brand-input text-gray-300">${s.cat}</span></td>
@@ -834,13 +987,18 @@
           <td class="p-3">${s.person}</td>
           <td class="p-3 text-sky-400">${s.phone}</td>
           <td class="p-3">${s.notes}</td>
+          <td class="p-3 text-right">
+            <button onclick="deleteSupplier(${idx})" class="text-rose-400 hover:text-rose-300 p-1" title="Delete Supplier">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
         </tr>
       `).join('');
     }
 
     function renderFleet() {
       const tbody = document.getElementById('fleetTableBody');
-      tbody.innerHTML = crmData.fleet.map(f => `
+      tbody.innerHTML = crmData.fleet.map((f, idx) => `
         <tr class="hover:bg-brand-cardBorder/40">
           <td class="p-3 font-bold text-white">${f.type}</td>
           <td class="p-3 font-mono text-brand-orange">${f.plate}</td>
@@ -848,6 +1006,11 @@
           <td class="p-3 text-sky-400">${f.phone}</td>
           <td class="p-3">${f.route}</td>
           <td class="p-3"><span class="px-2.5 py-0.5 rounded-full text-xs ${f.status === 'Available' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-brand-orange/20 text-brand-orange'} font-bold">${f.status}</span></td>
+          <td class="p-3 text-right">
+            <button onclick="deleteFleet(${idx})" class="text-rose-400 hover:text-rose-300 p-1" title="Delete Vehicle">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
         </tr>
       `).join('');
     }
@@ -856,9 +1019,28 @@
       const totalTurnover = crmData.bookings.reduce((sum, b) => sum + (Number(b.total) || 0), 0);
       const totalCost = crmData.bookings.reduce((sum, b) => sum + (Number(b.cost) || 0), 0);
       const totalMargin = crmData.bookings.reduce((sum, b) => sum + (Number(b.margin) || 0), 0);
+      const avgMarginPct = totalTurnover ? ((totalMargin / totalTurnover) * 100).toFixed(1) : 0;
+
       document.getElementById('pnlTurnover').textContent = '₹' + totalTurnover.toLocaleString('en-IN');
       document.getElementById('pnlCosts').textContent = '₹' + totalCost.toLocaleString('en-IN');
       document.getElementById('pnlNetProfit').textContent = '₹' + totalMargin.toLocaleString('en-IN');
+      document.getElementById('pnlAvgMargin').textContent = avgMarginPct + '%';
+
+      const tbody = document.getElementById('pnlTableBody');
+      tbody.innerHTML = crmData.bookings.map(b => {
+        const pct = b.total ? ((b.margin / b.total) * 100).toFixed(1) : 0;
+        return `
+          <tr class="hover:bg-brand-cardBorder/40">
+            <td class="p-3 font-mono text-brand-orange">${b.id}</td>
+            <td class="p-3 font-bold text-white">${b.client}</td>
+            <td class="p-3 text-white">₹${Number(b.total).toLocaleString('en-IN')}</td>
+            <td class="p-3 text-rose-400">₹${Number(b.cost).toLocaleString('en-IN')}</td>
+            <td class="p-3 text-emerald-400 font-bold">₹${Number(b.margin).toLocaleString('en-IN')}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-400 font-bold">${pct}%</span></td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${pct >= 15 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-brand-orange/20 text-brand-orange'} font-semibold">${pct >= 15 ? 'High Profit' : 'Standard'}</span></td>
+          </tr>
+        `;
+      }).join('');
     }
 
     // Tab Switcher
@@ -878,7 +1060,7 @@
       });
     }
 
-    // Leads logic & Conversion
+    // Lead Operations
     function openLeadModal() { document.getElementById('leadModal').classList.remove('hidden'); }
     function closeLeadModal() { document.getElementById('leadModal').classList.add('hidden'); }
 
@@ -936,7 +1118,7 @@
         persistData();
       });
 
-      alert(`Lead ${lead.name} has been confirmed & added to Bookings!`);
+      alert(`Lead ${lead.name} confirmed and added to Bookings!`);
       switchTab('confirmed');
     }
 
@@ -947,7 +1129,53 @@
       }
     }
 
-    // Supplier Modal Logic (Fixed & Working)
+    function deleteBooking(idx) {
+      if (confirm("Are you sure you want to delete this confirmed booking?")) {
+        crmData.bookings.splice(idx, 1);
+        persistData();
+      }
+    }
+
+    // Accounts Edit Modal
+    let editingBookingIndex = null;
+    function openPaymentModal(idx) {
+      editingBookingIndex = idx;
+      const b = crmData.bookings[idx];
+      document.getElementById('editPaymentBookingId').value = b.id;
+      document.getElementById('editPaymentClient').value = b.client;
+      document.getElementById('editPaymentTotal').value = b.total;
+      document.getElementById('editPaymentAdvance').value = b.advance;
+      document.getElementById('editPaymentBalance').value = b.balance;
+      document.getElementById('editPaymentDueDate').value = b.dueDate || "";
+      document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    function closePaymentModal() {
+      document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    function calculateEditBalance() {
+      const tot = Number(document.getElementById('editPaymentTotal').value) || 0;
+      const adv = Number(document.getElementById('editPaymentAdvance').value) || 0;
+      document.getElementById('editPaymentBalance').value = Math.max(0, tot - adv);
+    }
+
+    function handlePaymentUpdate(e) {
+      e.preventDefault();
+      if (editingBookingIndex === null) return;
+      const b = crmData.bookings[editingBookingIndex];
+      b.total = Number(document.getElementById('editPaymentTotal').value);
+      b.advance = Number(document.getElementById('editPaymentAdvance').value);
+      b.balance = Number(document.getElementById('editPaymentBalance').value);
+      b.dueDate = document.getElementById('editPaymentDueDate').value;
+      b.synced = false;
+
+      persistData();
+      closePaymentModal();
+      alert("Payment record updated successfully!");
+    }
+
+    // Supplier Management
     function openSupplierModal() { document.getElementById('supplierModal').classList.remove('hidden'); }
     function closeSupplierModal() { document.getElementById('supplierModal').classList.add('hidden'); }
 
@@ -976,7 +1204,14 @@
       alert("Supplier added successfully & synced!");
     }
 
-    // Fleet Modal Logic (Fixed & Working)
+    function deleteSupplier(idx) {
+      if (confirm("Delete this supplier?")) {
+        crmData.suppliers.splice(idx, 1);
+        persistData();
+      }
+    }
+
+    // Fleet Management
     function openFleetModal() { document.getElementById('fleetModal').classList.remove('hidden'); }
     function closeFleetModal() { document.getElementById('fleetModal').classList.add('hidden'); }
 
@@ -1005,7 +1240,14 @@
       alert("Vehicle added successfully & synced!");
     }
 
-    // Google Sheets Modal controls
+    function deleteFleet(idx) {
+      if (confirm("Delete this vehicle?")) {
+        crmData.fleet.splice(idx, 1);
+        persistData();
+      }
+    }
+
+    // Google Sheets Settings
     function openSheetModal() {
       document.getElementById('sheetUrlInput').value = getSheetUrl();
       document.getElementById('sheetModal').classList.remove('hidden');
@@ -1021,10 +1263,10 @@
       alert("Google Sheet Web App URL connected successfully!");
     }
 
-    // Quotation Builder Logic
+    // Advanced Quotation Calculations
     let itineraryDays = [
-      { day: 1, title: "Arrival & Hotel Check-in with Welcome Dinner" },
-      { day: 2, title: "Full-Day Sightseeing Tour & Local Experiences" }
+      { day: 1, title: "Arrival & Transfer to Hotel with Welcome Refreshment" },
+      { day: 2, title: "City Tour, Cultural Sightseeing & Sunset Cruise" }
     ];
 
     function renderItineraryRows() {
@@ -1039,7 +1281,7 @@
     }
 
     function addItineraryDayRow() {
-      itineraryDays.push({ day: itineraryDays.length + 1, title: "Leisure Day / Sightseeing Tour" });
+      itineraryDays.push({ day: itineraryDays.length + 1, title: "Leisure Day / Exploration Tour" });
       renderItineraryRows();
     }
 
@@ -1057,25 +1299,46 @@
       const c = Number(document.getElementById('costCab').value) || 0;
       const v = Number(document.getElementById('costVisa').value) || 0;
       const m = Number(document.getElementById('costMargin').value) || 0;
-      const grandTotal = f + h + c + v + m;
+      
+      const subtotal = f + h + c + v + m;
+      const includeGst = document.getElementById('quoteIncludeGst').checked;
+      const gst = includeGst ? Math.round(subtotal * 0.05) : 0;
+      const grandTotal = subtotal + gst;
+
+      const adults = Number(document.getElementById('paxAdults').value) || 1;
+      const kids = Number(document.getElementById('paxKids').value) || 0;
+      const totalPax = Math.max(1, adults + kids);
+      const perPax = Math.round(grandTotal / totalPax);
+
+      document.getElementById('gstAmountLabel').textContent = `GST (5%): ₹${gst.toLocaleString('en-IN')}`;
       document.getElementById('quoteGrandTotal').textContent = '₹' + grandTotal.toLocaleString('en-IN');
-      return { cost: f + h + c + v, margin: m, total: grandTotal };
+      document.getElementById('quotePerPaxTotal').textContent = `(₹${perPax.toLocaleString('en-IN')} / person)`;
+
+      return { cost: f + h + c + v, margin: m + gst, total: grandTotal, perPax: perPax };
     }
 
     function generateWhatsAppQuote() {
-      const client = document.getElementById('quoteClient').value || "Valued Client";
+      const client = document.getElementById('quoteClient').value || "Valued Traveler";
       const phone = document.getElementById('quotePhone').value || "";
       const dest = document.getElementById('quoteDest').value || "Holiday Package";
-      const { total } = calculateQuoteTotal();
+      const hotelCat = document.getElementById('quoteHotelCat').value;
+      const mealPlan = document.getElementById('quoteMealPlan').value;
+      const adults = document.getElementById('paxAdults').value;
+      const kids = document.getElementById('paxKids').value;
+      const { total, perPax } = calculateQuoteTotal();
 
       let msg = `*YOGI FLYING WORLD - Customized Holiday Proposal*%0A%0A`;
-      msg += `Namaste ${client},%0AHere is your curated travel quotation for *${dest}*:%0A%0A`;
-      msg += `*Day-wise Itinerary:*%0A`;
+      msg += `Namaste ${client},%0AHere is your tailored holiday quotation for *${dest}*:%0A%0A`;
+      msg += `*Travelers:* ${adults} Adults${kids > 0 ? ', ' + kids + ' Children' : ''}%0A`;
+      msg += `*Accommodation:* ${hotelCat}%0A`;
+      msg += `*Meal Plan:* ${mealPlan}%0A%0A`;
+      msg += `*Day-Wise Plan:*%0A`;
       itineraryDays.forEach(d => {
         msg += `• Day ${d.day}: ${d.title}%0A`;
       });
-      msg += `%0A*Package Inclusions:* Flights, Star Hotel Stay, Private Transfers, Sightseeing & 24x7 Support.%0A`;
-      msg += `*Total Package Cost:* ₹${total.toLocaleString('en-IN')} (All-inclusive)%0A%0A`;
+      msg += `%0A*Package Inclusions:* Return Flights, Accommodation, Private Airport Transfers, Daily Sightseeing & 24x7 Trip Support.%0A`;
+      msg += `*Grand Total Package Price:* ₹${total.toLocaleString('en-IN')} (All-inclusive)%0A`;
+      msg += `*Approx Cost per Person:* ₹${perPax.toLocaleString('en-IN')}%0A%0A`;
       msg += `Best regards,%0A*Yogi Flying World*, Ahmedabad`;
 
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
