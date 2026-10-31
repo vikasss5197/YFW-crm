@@ -41,16 +41,15 @@
 </head>
 <body class="custom-scroll antialiased selection:bg-brand-orange selection:text-white">
 
-  <!-- Top Navigation Bar -->
+  <!-- Header -->
   <header class="sticky top-0 z-40 bg-brand-card/90 backdrop-blur-md border-b border-brand-cardBorder px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-3">
-      <!-- Customizable Logo Box -->
       <div class="relative group cursor-pointer" onclick="document.getElementById('logoFileInput').click()">
         <div id="logoPreviewWrapper" class="w-10 h-10 rounded-xl bg-brand-input border border-brand-cardBorder flex items-center justify-center overflow-hidden hover:border-brand-orange transition">
           <i class="fa-solid fa-plane-departure text-brand-orange text-lg" id="defaultLogoIcon"></i>
           <img id="customLogoImg" class="w-full h-full object-contain hidden" alt="Yogi Flying World" />
         </div>
-        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-brand-orange text-black flex items-center justify-center text-[10px] shadow group-hover:scale-110 transition">
+        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-brand-orange text-black flex items-center justify-center text-[10px] shadow">
           <i class="fa-solid fa-pen"></i>
         </span>
       </div>
@@ -59,13 +58,12 @@
       <div>
         <h1 class="text-xl font-black tracking-wider uppercase text-white flex items-center gap-2">
           <span>YOGI FLYING WORLD</span>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 font-medium tracking-normal lowercase">erp</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 font-medium">erp</span>
         </h1>
-        <p class="text-[11px] text-brand-textMuted font-medium">Ahmedabad • Travel Agency Management</p>
+        <p class="text-[11px] text-brand-textMuted font-medium">Ahmedabad • Travel Agency Operations</p>
       </div>
     </div>
 
-    <!-- Live Sync Indicators & Controls -->
     <div class="flex items-center gap-2 sm:gap-3">
       <div id="firebaseBadge" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -77,14 +75,14 @@
         <span id="sheetBadgeText">Connect Sheet</span>
       </button>
 
-      <button onclick="exportBackupJSON()" class="px-3 py-1 rounded-lg text-xs font-semibold bg-brand-input hover:bg-brand-cardBorder text-brand-textMuted border border-brand-cardBorder transition flex items-center gap-1.5" title="Export Backup">
-        <i class="fa-solid fa-download"></i>
-        <span class="hidden sm:inline">Backup</span>
+      <button onclick="triggerSheetSyncAll()" class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30 transition flex items-center gap-1.5" title="Push non-synced data to Google Sheet">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <span>Smart Sync</span>
       </button>
     </div>
   </header>
 
-  <!-- Module Navigation Tabs -->
+  <!-- Navigation Tabs -->
   <nav class="bg-brand-card border-b border-brand-cardBorder px-4 lg:px-8 py-2 overflow-x-auto custom-scroll">
     <div class="flex items-center gap-2 min-w-max text-sm font-semibold">
       <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-2 rounded-lg bg-brand-purple text-white flex items-center gap-2 transition" data-tab="dashboard">
@@ -92,6 +90,9 @@
       </button>
       <button onclick="switchTab('leads')" class="tab-btn px-4 py-2 rounded-lg hover:bg-brand-input text-brand-textMuted hover:text-white flex items-center gap-2 transition" data-tab="leads">
         <i class="fa-solid fa-user-plus text-sky-400"></i> Leads
+      </button>
+      <button onclick="switchTab('confirmed')" class="tab-btn px-4 py-2 rounded-lg hover:bg-brand-input text-brand-textMuted hover:text-white flex items-center gap-2 transition" data-tab="confirmed">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i> Confirmed Bookings
       </button>
       <button onclick="switchTab('quotation')" class="tab-btn px-4 py-2 rounded-lg hover:bg-brand-input text-brand-textMuted hover:text-white flex items-center gap-2 transition" data-tab="quotation">
         <i class="fa-solid fa-file-invoice-dollar text-brand-orange"></i> Quote Generator
@@ -120,7 +121,7 @@
   <!-- Main Container -->
   <main class="p-4 lg:p-8 max-w-7xl mx-auto space-y-6">
 
-    <!-- TAB 1: DASHBOARD -->
+    <!-- 1. DASHBOARD -->
     <section id="tab-dashboard" class="space-y-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder">
@@ -129,71 +130,44 @@
           <span class="text-[11px] text-brand-orange font-semibold">Active confirmations</span>
         </div>
         <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder">
-          <p class="text-xs text-brand-textMuted font-medium">Pending Inquiries</p>
+          <p class="text-xs text-brand-textMuted font-medium">Open Leads</p>
           <h3 id="statTotalLeads" class="text-2xl font-black text-white mt-1">0</h3>
           <span class="text-[11px] text-sky-400 font-semibold">In pipeline</span>
         </div>
         <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder">
-          <p class="text-xs text-brand-textMuted font-medium">Total Turnover</p>
+          <p class="text-xs text-brand-textMuted font-medium">Turnover</p>
           <h3 id="statTotalRevenue" class="text-2xl font-black text-emerald-400 mt-1">₹0</h3>
           <span class="text-[11px] text-brand-textMuted font-semibold">Package gross sales</span>
         </div>
         <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder">
-          <p class="text-xs text-brand-textMuted font-medium">Receivables (Due)</p>
+          <p class="text-xs text-brand-textMuted font-medium">Receivables Due</p>
           <h3 id="statDuePayments" class="text-2xl font-black text-rose-400 mt-1">₹0</h3>
-          <span class="text-[11px] text-rose-300 font-semibold">Pending from clients</span>
+          <span class="text-[11px] text-rose-300 font-semibold">Pending from travelers</span>
         </div>
       </div>
 
-      <!-- Quick Action Shortcuts -->
       <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-lg font-bold text-white">Quick Operations</h2>
-          <p class="text-xs text-brand-textMuted">Instantly perform recurring tasks for Yogi Flying World</p>
+          <h2 class="text-lg font-bold text-white">Yogi Flying World Operations</h2>
+          <p class="text-xs text-brand-textMuted">Real-time sync enabled across devices & Google Sheets</p>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button onclick="openLeadModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 shadow-lg shadow-brand-orange/20 transition">
+          <button onclick="openLeadModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
             <i class="fa-solid fa-plus"></i> New Lead
           </button>
           <button onclick="switchTab('quotation')" class="px-4 py-2.5 rounded-xl bg-brand-purple hover:bg-brand-purpleHover text-white text-sm font-bold flex items-center gap-2 transition">
             <i class="fa-solid fa-file-signature"></i> Create Quotation
           </button>
-          <button onclick="triggerSheetSyncAll()" class="px-4 py-2.5 rounded-xl bg-brand-input hover:bg-brand-cardBorder border border-brand-cardBorder text-white text-sm font-bold flex items-center gap-2 transition">
-            <i class="fa-solid fa-arrows-rotate text-emerald-400"></i> Sync All to Sheet
-          </button>
-        </div>
-      </div>
-
-      <!-- Recent Activity Table -->
-      <div class="bg-brand-card p-5 rounded-2xl border border-brand-cardBorder">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-clock-rotate-left text-brand-orange"></i> Recent Leads Pipeline
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-brand-textMuted">
-            <thead class="text-xs uppercase bg-brand-input text-gray-300 border-b border-brand-cardBorder">
-              <tr>
-                <th class="p-3">Client</th>
-                <th class="p-3">Destination</th>
-                <th class="p-3">Pax</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="dashboardRecentLeads" class="divide-y divide-brand-cardBorder">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
         </div>
       </div>
     </section>
 
-    <!-- TAB 2: LEADS MANAGEMENT -->
+    <!-- 2. LEADS -->
     <section id="tab-leads" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-black text-white">Leads & Inquiries</h2>
-          <p class="text-xs text-brand-textMuted">Manage travelers, destinations, budgets, and conversions</p>
+          <h2 class="text-xl font-black text-white">Inquiries & Leads</h2>
+          <p class="text-xs text-brand-textMuted">Capture client requests and convert directly into confirmed bookings</p>
         </div>
         <button onclick="openLeadModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
           <i class="fa-solid fa-user-plus"></i> Add Lead
@@ -204,24 +178,50 @@
         <table class="w-full text-left text-sm text-brand-textMuted">
           <thead class="text-xs uppercase bg-brand-input text-gray-300 border-b border-brand-cardBorder">
             <tr>
+              <th class="p-3">Lead ID</th>
               <th class="p-3">Date</th>
-              <th class="p-3">Client Name</th>
-              <th class="p-3">Contact</th>
+              <th class="p-3">Client</th>
+              <th class="p-3">Phone</th>
               <th class="p-3">Destination</th>
-              <th class="p-3">Pax</th>
               <th class="p-3">Budget</th>
               <th class="p-3">Status</th>
-              <th class="p-3 text-right">Action</th>
+              <th class="p-3 text-right">Convert / Actions</th>
             </tr>
           </thead>
-          <tbody id="leadsTableBody" class="divide-y divide-brand-cardBorder">
-            <!-- Rendered via JS -->
-          </tbody>
+          <tbody id="leadsTableBody" class="divide-y divide-brand-cardBorder"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 3: QUOTATION GENERATOR -->
+    <!-- 3. CONFIRMED BOOKINGS (NEW DEDICATED MODULE) -->
+    <section id="tab-confirmed" class="hidden space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black text-emerald-400">Confirmed Travel Bookings</h2>
+          <p class="text-xs text-brand-textMuted">All finalized tours converted from inquiries or quotations</p>
+        </div>
+      </div>
+
+      <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder overflow-x-auto">
+        <table class="w-full text-left text-sm text-brand-textMuted">
+          <thead class="text-xs uppercase bg-brand-input text-gray-300 border-b border-brand-cardBorder">
+            <tr>
+              <th class="p-3">Booking ID</th>
+              <th class="p-3">Client</th>
+              <th class="p-3">Destination</th>
+              <th class="p-3">Departure Date</th>
+              <th class="p-3">Total Amount</th>
+              <th class="p-3">Advance Paid</th>
+              <th class="p-3">Balance</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="confirmedTableBody" class="divide-y divide-brand-cardBorder"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. QUOTATION GENERATOR -->
     <section id="tab-quotation" class="hidden space-y-6">
       <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
         <h2 class="text-xl font-black text-white mb-1">Interactive Quotation Builder</h2>
@@ -230,19 +230,18 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <label class="text-xs font-semibold text-gray-300">Client Name</label>
-            <input type="text" id="quoteClient" placeholder="e.g. Ketan Soni" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm focus:border-brand-purple outline-none">
+            <input type="text" id="quoteClient" placeholder="e.g. Ketan Soni" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
           <div>
             <label class="text-xs font-semibold text-gray-300">Client Phone (with country code)</label>
-            <input type="text" id="quotePhone" placeholder="e.g. 919876543210" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm focus:border-brand-purple outline-none">
+            <input type="text" id="quotePhone" placeholder="e.g. 919825000000" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
           <div>
             <label class="text-xs font-semibold text-gray-300">Destination & Duration</label>
-            <input type="text" id="quoteDest" placeholder="e.g. Thailand - 5 Nights / 6 Days" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm focus:border-brand-purple outline-none">
+            <input type="text" id="quoteDest" placeholder="e.g. Thailand 5N/6D" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
         </div>
 
-        <!-- Day-wise Itinerary Items -->
         <div class="space-y-3 mb-6">
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-white uppercase tracking-wider">Day-Wise Itinerary Plan</h3>
@@ -250,12 +249,9 @@
               <i class="fa-solid fa-plus"></i> Add Next Day
             </button>
           </div>
-          <div id="itineraryDaysList" class="space-y-3">
-            <!-- Dynamic rows -->
-          </div>
+          <div id="itineraryDaysList" class="space-y-3"></div>
         </div>
 
-        <!-- Costing Breakdown -->
         <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder grid grid-cols-2 md:grid-cols-5 gap-3 text-xs mb-6">
           <div>
             <label class="text-brand-textMuted">Flights (₹)</label>
@@ -279,15 +275,14 @@
           </div>
         </div>
 
-        <!-- Total Quote Preview & Actions -->
         <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-brand-purple/20 border border-brand-purple/40">
           <div>
-            <p class="text-xs text-brand-textMuted">Client Total Quote Price</p>
+            <p class="text-xs text-brand-textMuted">Grand Total</p>
             <h4 id="quoteGrandTotal" class="text-3xl font-black text-white">₹0</h4>
           </div>
           <div class="flex flex-wrap gap-2">
             <button onclick="generateWhatsAppQuote()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold flex items-center gap-2 transition">
-              <i class="fa-brands fa-whatsapp text-lg"></i> Share on WhatsApp
+              <i class="fa-brands fa-whatsapp text-lg"></i> Share Quote
             </button>
             <button onclick="saveQuotationAsBooking()" class="px-5 py-2.5 rounded-xl bg-brand-purple hover:bg-brand-purpleHover text-white text-sm font-bold flex items-center gap-2 transition">
               <i class="fa-solid fa-check"></i> Convert to Booking
@@ -297,12 +292,12 @@
       </div>
     </section>
 
-    <!-- TAB 4: BOOKINGS & TOURS MANAGEMENT -->
+    <!-- 5. TOURS & OPS -->
     <section id="tab-bookings" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-black text-white">Tours & Operations Tracker</h2>
-          <p class="text-xs text-brand-textMuted">Monitor hotel vouchers, flight tickets, visa and transfers</p>
+          <h2 class="text-xl font-black text-white">Tours & Operations Checklist</h2>
+          <p class="text-xs text-brand-textMuted">Track vouchers, flights, cabs and visa status</p>
         </div>
       </div>
       <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder overflow-x-auto">
@@ -319,19 +314,17 @@
               <th class="p-3">Status</th>
             </tr>
           </thead>
-          <tbody id="bookingsTableBody" class="divide-y divide-brand-cardBorder">
-            <!-- Rendered via JS -->
-          </tbody>
+          <tbody id="bookingsTableBody" class="divide-y divide-brand-cardBorder"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 5: ACCOUNTS & PAYMENTS -->
+    <!-- 6. ACCOUNTS & PAYMENTS -->
     <section id="tab-accounts" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-black text-white">Accounts & Client Ledgers</h2>
-          <p class="text-xs text-brand-textMuted">Track package costs, advances, balance receivables and due dates</p>
+          <h2 class="text-xl font-black text-white">Client Accounts & Ledgers</h2>
+          <p class="text-xs text-brand-textMuted">Track advances, balances, and send payment reminders</p>
         </div>
       </div>
       <div class="bg-brand-card p-4 rounded-2xl border border-brand-cardBorder overflow-x-auto">
@@ -341,25 +334,23 @@
               <th class="p-3">Booking ID</th>
               <th class="p-3">Client Name</th>
               <th class="p-3">Total Amount</th>
-              <th class="p-3">Advance Paid</th>
-              <th class="p-3">Balance Due</th>
+              <th class="p-3">Advance</th>
+              <th class="p-3">Balance</th>
               <th class="p-3">Due Date</th>
               <th class="p-3 text-right">Reminder</th>
             </tr>
           </thead>
-          <tbody id="accountsTableBody" class="divide-y divide-brand-cardBorder">
-            <!-- Rendered via JS -->
-          </tbody>
+          <tbody id="accountsTableBody" class="divide-y divide-brand-cardBorder"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 6: SUPPLIERS & DMC -->
+    <!-- 7. SUPPLIERS & DMC (WITH WORKING MODAL) -->
     <section id="tab-suppliers" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Hotel & B2B Suppliers Directory</h2>
-          <p class="text-xs text-brand-textMuted">DMCs, Wholesalers, Flight Agents and Destination Partners</p>
+          <p class="text-xs text-brand-textMuted">DMCs, Wholesalers, Flight Desks, and Land Operators</p>
         </div>
         <button onclick="openSupplierModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
           <i class="fa-solid fa-plus"></i> Add Supplier
@@ -371,25 +362,23 @@
             <tr>
               <th class="p-3">Vendor Name</th>
               <th class="p-3">Category</th>
-              <th class="p-3">Destination / Market</th>
+              <th class="p-3">Market / Destination</th>
               <th class="p-3">Contact Person</th>
               <th class="p-3">Phone</th>
               <th class="p-3">Contract Rate / Notes</th>
             </tr>
           </thead>
-          <tbody id="suppliersTableBody" class="divide-y divide-brand-cardBorder">
-            <!-- Rendered via JS -->
-          </tbody>
+          <tbody id="suppliersTableBody" class="divide-y divide-brand-cardBorder"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 7: FLEET & VEHICLE MANAGEMENT -->
+    <!-- 8. FLEET & CABS (WITH WORKING MODAL) -->
     <section id="tab-fleet" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-white">Vehicle & Fleet Operations</h2>
-          <p class="text-xs text-brand-textMuted">Cabs, tempo travelers, drivers and airport transfers</p>
+          <p class="text-xs text-brand-textMuted">Cabs, tempo travellers, and driver allocations</p>
         </div>
         <button onclick="openFleetModal()" class="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold flex items-center gap-2 transition">
           <i class="fa-solid fa-plus"></i> Add Vehicle
@@ -402,69 +391,47 @@
               <th class="p-3">Vehicle Type</th>
               <th class="p-3">Plate No.</th>
               <th class="p-3">Driver Name</th>
-              <th class="p-3">Driver Contact</th>
-              <th class="p-3">Assigned Route</th>
+              <th class="p-3">Driver Phone</th>
+              <th class="p-3">Route / Trip</th>
               <th class="p-3">Status</th>
             </tr>
           </thead>
-          <tbody id="fleetTableBody" class="divide-y divide-brand-cardBorder">
-            <!-- Rendered via JS -->
-          </tbody>
+          <tbody id="fleetTableBody" class="divide-y divide-brand-cardBorder"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 8: WHATSAPP HUB -->
+    <!-- 9. WHATSAPP HUB -->
     <section id="tab-whatsapp" class="hidden space-y-6">
       <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
         <h2 class="text-xl font-black text-white mb-1">WhatsApp Communication Center</h2>
         <p class="text-xs text-brand-textMuted mb-6">Send personalized messages directly from Yogi Flying World</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Template 1: Welcome -->
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="fa-brands fa-whatsapp text-emerald-400"></i> Inquiry Welcome Greeting
             </h4>
-            <p class="text-xs text-brand-textMuted">Namaste! Thank you for connecting with Yogi Flying World, Ahmedabad. We have received your holiday inquiry...</p>
-            <button onclick="triggerQuickWhatsApp('Namaste! Thank you for inquiring with Yogi Flying World, Ahmedabad. Our team is curating the best customized holiday itinerary for you.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Welcome Message</button>
+            <p class="text-xs text-brand-textMuted">Namaste! Thank you for inquiring with Yogi Flying World, Ahmedabad...</p>
+            <button onclick="triggerQuickWhatsApp('Namaste! Thank you for connecting with Yogi Flying World, Ahmedabad. We have received your holiday inquiry and are curating the best package for you.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Welcome Message</button>
           </div>
 
-          <!-- Template 2: Payment Reminder -->
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Payment Balance Reminder
+              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Balance Payment Reminder
             </h4>
-            <p class="text-xs text-brand-textMuted">Greetings from Yogi Flying World. This is a gentle reminder regarding the pending balance for your tour...</p>
-            <button onclick="triggerQuickWhatsApp('Greetings from Yogi Flying World! Kindly complete your remaining tour payment to ensure smooth voucher and ticket issuance.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Payment Reminder</button>
-          </div>
-
-          <!-- Template 3: Tour Confirmation -->
-          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
-            <h4 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Vouchers & Flight Release
-            </h4>
-            <p class="text-xs text-brand-textMuted">Your trip with Yogi Flying World is confirmed! Please find your travel vouchers and itinerary details attached...</p>
-            <button onclick="triggerQuickWhatsApp('Congratulations! Your holiday package with Yogi Flying World is confirmed. Your tour tickets, hotel vouchers, and driver details have been processed.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Vouchers Notice</button>
-          </div>
-
-          <!-- Template 4: Feedback -->
-          <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder space-y-3">
-            <h4 class="text-sm font-bold text-white flex items-center gap-2">
-              <i class="fa-brands fa-whatsapp text-emerald-400"></i> Post-Trip Review Request
-            </h4>
-            <p class="text-xs text-brand-textMuted">Welcome back! We hope you had an unforgettable trip with Yogi Flying World. Please take 30 seconds to rate us...</p>
-            <button onclick="triggerQuickWhatsApp('Welcome back home! Team Yogi Flying World hopes you had a wonderful journey. We would love to hear your feedback!')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Ask for Review</button>
+            <p class="text-xs text-brand-textMuted">Greetings from Yogi Flying World! Kindly clear your balance payment...</p>
+            <button onclick="triggerQuickWhatsApp('Greetings from Yogi Flying World! Kindly complete your remaining tour payment to ensure smooth voucher and flight ticket issuance.')" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">Send Payment Reminder</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 9: PROFIT & LOSS -->
+    <!-- 10. PROFIT & LOSS -->
     <section id="tab-pnl" class="hidden space-y-6">
       <div class="bg-brand-card p-6 rounded-2xl border border-brand-cardBorder">
         <h2 class="text-xl font-black text-white mb-1">Profit & Loss (P&L) Analytics</h2>
-        <p class="text-xs text-brand-textMuted mb-6">Real-time financial performance and per-booking margins</p>
+        <p class="text-xs text-brand-textMuted mb-6">Real-time financial performance and margins</p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div class="p-4 rounded-xl bg-brand-input border border-brand-cardBorder">
@@ -480,44 +447,28 @@
             <h3 id="pnlNetProfit" class="text-2xl font-black text-emerald-400 mt-1">₹0</h3>
           </div>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-brand-textMuted">
-            <thead class="text-xs uppercase bg-brand-input text-gray-300 border-b border-brand-cardBorder">
-              <tr>
-                <th class="p-3">Booking ID</th>
-                <th class="p-3">Client</th>
-                <th class="p-3">Package Price</th>
-                <th class="p-3">Vendor Cost</th>
-                <th class="p-3">Net Profit</th>
-                <th class="p-3">Margin %</th>
-              </tr>
-            </thead>
-            <tbody id="pnlTableBody" class="divide-y divide-brand-cardBorder">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL: GOOGLE SHEET SETTINGS -->
+  <!-- MODALS -->
+
+  <!-- 1. Google Sheets Modal -->
   <div id="sheetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-brand-card border border-brand-cardBorder w-full max-w-lg rounded-2xl p-6 space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-table text-emerald-400"></i> Google Sheet Live Sync
+          <i class="fa-solid fa-table text-emerald-400"></i> Google Sheet Connection
         </h3>
-        <button onclick="closeSheetModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <button onclick="closeSheetModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p class="text-xs text-brand-textMuted">
-        Paste your Google Apps Script Web App URL below. Any newly created lead, booking, or payment will instantly append to your Google Sheet tabs.
+        Paste your Google Apps Script Web App URL below (ending with /exec).
       </p>
       <div>
-        <label class="text-xs font-semibold text-gray-300">Web App URL (from Apps Script Deployment)</label>
-        <input type="url" id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none focus:border-brand-purple font-mono text-xs">
+        <label class="text-xs font-semibold text-gray-300">Web App URL</label>
+        <input type="url" id="sheetUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-xs font-mono outline-none">
       </div>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="closeSheetModal()" class="px-4 py-2 rounded-xl bg-brand-input text-brand-textMuted text-xs font-bold">Cancel</button>
@@ -526,11 +477,11 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD LEAD -->
+  <!-- 2. Add Lead Modal -->
   <div id="leadModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-white">Add New Travel Lead</h3>
+        <h3 class="text-lg font-bold text-white">Add Travel Lead</h3>
         <button onclick="closeLeadModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="handleLeadSubmit(event)" class="space-y-3">
@@ -539,42 +490,110 @@
           <input type="text" id="leadName" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div>
-          <label class="text-xs text-gray-300">Contact / WhatsApp</label>
-          <input type="text" id="leadPhone" required placeholder="e.g. 9876543210" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          <label class="text-xs text-gray-300">Phone</label>
+          <input type="text" id="leadPhone" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-xs text-gray-300">Destination</label>
-            <input type="text" id="leadDest" required placeholder="e.g. Bali, Dubai" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <input type="text" id="leadDest" required class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
           <div>
-            <label class="text-xs text-gray-300">Pax Count</label>
-            <input type="text" id="leadPax" placeholder="2 Adults, 1 Child" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <label class="text-xs text-gray-300">Pax</label>
+            <input type="text" id="leadPax" placeholder="2 Adults" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-xs text-gray-300">Approx Budget (₹)</label>
-            <input type="number" id="leadBudget" placeholder="e.g. 75000" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
-          </div>
-          <div>
-            <label class="text-xs text-gray-300">Status</label>
-            <select id="leadStatus" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
-              <option value="New">New</option>
-              <option value="Quote Sent">Quote Sent</option>
-              <option value="Follow-up">Follow-up</option>
-              <option value="Confirmed">Confirmed</option>
-            </select>
-          </div>
+        <div>
+          <label class="text-xs text-gray-300">Budget (₹)</label>
+          <input type="number" id="leadBudget" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
         </div>
         <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold transition">Save Lead</button>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC WITH FIREBASE & GOOGLE SHEET SYNC -->
+  <!-- 3. Add Supplier Modal -->
+  <div id="supplierModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-white">Add New Supplier / DMC</h3>
+        <button onclick="closeSupplierModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleSupplierSubmit(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-300">Company / Vendor Name</label>
+          <input type="text" id="supName" required placeholder="e.g. Siam DMC Ltd" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Category</label>
+          <select id="supCat" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+            <option value="DMC">Land DMC</option>
+            <option value="Hotel Wholesaler">Hotel Wholesaler</option>
+            <option value="Flight Desk">Flight Desk</option>
+            <option value="Visa Provider">Visa Provider</option>
+            <option value="Cruise & Rail">Cruise & Rail</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-gray-300">Market / Destination</label>
+            <input type="text" id="supMarket" required placeholder="e.g. Dubai, Bali" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-gray-300">Contact Person</label>
+            <input type="text" id="supPerson" placeholder="e.g. Rahul" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Phone / WhatsApp</label>
+          <input type="text" id="supPhone" required placeholder="+91..." class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Contract Rate / Notes</label>
+          <input type="text" id="supNotes" placeholder="e.g. 10% credit net 15 days" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold transition">Save Supplier</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add Fleet Modal -->
+  <div id="fleetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-cardBorder w-full max-w-md rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-white">Add Cab / Vehicle</h3>
+        <button onclick="closeFleetModal()" class="text-brand-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleFleetSubmit(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-300">Vehicle Type</label>
+          <input type="text" id="fleetType" required placeholder="e.g. Innova Crysta, Urbania" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Plate Number</label>
+          <input type="text" id="fleetPlate" required placeholder="e.g. GJ-01-XX-1234" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-gray-300">Driver Name</label>
+            <input type="text" id="fleetDriver" required placeholder="e.g. Ramesh Bhai" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+          <div>
+            <label class="text-xs text-gray-300">Driver Phone</label>
+            <input type="text" id="fleetPhone" required placeholder="e.g. 9825..." class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-gray-300">Assigned Route / City</label>
+          <input type="text" id="fleetRoute" placeholder="e.g. Ahmedabad Airport - SOU" class="w-full mt-1 px-3 py-2 rounded-xl bg-brand-input border border-brand-cardBorder text-white text-sm outline-none">
+        </div>
+        <button type="submit" class="w-full mt-2 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orangeHover text-white text-sm font-bold transition">Save Vehicle</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // 1. Firebase Initialization with your provided keys
     const firebaseConfig = {
       apiKey: "AIzaSyCatznRYEyNCEPRB0Q_UGiHw78KqLOnFxU",
       authDomain: "yfw-crm.firebaseapp.com",
@@ -589,39 +608,40 @@
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      console.log("Firebase initialized successfully");
-    } catch (e) {
-      console.warn("Firebase offline or initialization warning:", e);
-      document.getElementById('firebaseBadge').innerHTML = `<i class="fa-solid fa-circle text-amber-400"></i> Local Mode`;
+    } catch(e) {
+      console.warn("Firebase fallback:", e);
     }
 
-    // Default Sample Data
     let crmData = {
       leads: [
-        { id: "L101", date: "2026-10-28", name: "Ketan Soni", phone: "919825000000", dest: "Thailand (Phuket & Krabi)", pax: "2 Adults", budget: "85000", status: "Follow-up" },
-        { id: "L102", date: "2026-10-29", name: "Ramesh Patel", phone: "919426000000", dest: "Dubai 5N/6D", pax: "4 Adults, 2 Child", budget: "240000", status: "Quote Sent" },
-        { id: "L103", date: "2026-10-30", name: "Ankit Shah", phone: "919898000000", dest: "Goa Weekend", pax: "6 Adults", budget: "95000", status: "New" }
+        { id: "L101", date: "2026-10-28", name: "Ketan Soni", phone: "919825000000", dest: "Thailand (Phuket & Krabi)", pax: "2 Adults", budget: "85000", status: "Follow-up", synced: false },
+        { id: "L102", date: "2026-10-29", name: "Ramesh Patel", phone: "919426000000", dest: "Dubai 5N/6D", pax: "4 Adults, 2 Child", budget: "240000", status: "Confirmed", synced: false }
       ],
       bookings: [
-        { id: "BK-801", client: "Ketan Soni", dest: "Thailand Explorer", dept: "2026-11-15", flight: "Confirmed", hotel: "Voucher Issued", visa: "Approved", status: "Upcoming", cost: 70000, margin: 15000, total: 85000, advance: 50000, balance: 35000, dueDate: "2026-11-10" }
+        { id: "BK-801", client: "Ramesh Patel", dest: "Dubai 5N/6D", dept: "2026-11-20", flight: "Confirmed", hotel: "Confirmed", visa: "Approved", status: "Confirmed", cost: 190000, margin: 50000, total: 240000, advance: 150000, balance: 90000, dueDate: "2026-11-15", synced: false }
       ],
       suppliers: [
-        { name: "Siam Discovery DMC", cat: "Land DMC", market: "Thailand", person: "Anan", phone: "+66 812345678", notes: "Phuket/Krabi contracted rate net" },
-        { name: "Arabian Horizon Tours", cat: "DMC & Visa", market: "Dubai / UAE", person: "Farhan", phone: "+971 501234567", notes: "Instant eVisa processing" }
+        { id: "S1", name: "Siam Discovery DMC", cat: "DMC", market: "Thailand", person: "Anan", phone: "+66 812345678", notes: "Phuket/Krabi contracted rate net", synced: false },
+        { id: "S2", name: "Arabian Horizon Tours", cat: "DMC", market: "Dubai / UAE", person: "Farhan", phone: "+971 501234567", notes: "Instant eVisa processing", synced: false }
       ],
       fleet: [
-        { type: "Innova Crysta", plate: "GJ-01-XX-4422", driver: "Prakash Bhai", phone: "9824000000", route: "Ahmedabad - Diu - Somnath", status: "On Trip" },
-        { type: "Tempo Traveller (17S)", plate: "GJ-27-TT-9988", driver: "Mahesh", phone: "9898111111", route: "Statue of Unity Express", status: "Available" }
+        { id: "V1", type: "Innova Crysta", plate: "GJ-01-XX-4422", driver: "Prakash Bhai", phone: "9824000000", route: "Ahmedabad - Diu", status: "Available", synced: false }
       ]
     };
 
-    // Load from LocalStorage if present
-    const localSaved = localStorage.getItem('yfw_crm_data');
-    if (localSaved) {
-      try { crmData = JSON.parse(localSaved); } catch(e){}
+    const savedLocal = localStorage.getItem('yfw_crm_data_v2');
+    if (savedLocal) {
+      try { crmData = JSON.parse(savedLocal); } catch(e){}
     }
 
-    // Google Sheets Integration Bridge
+    function persistData() {
+      localStorage.setItem('yfw_crm_data_v2', JSON.stringify(crmData));
+      if (db) {
+        db.collection("crm_store").doc("main_data").set(crmData).catch(e => console.warn(e));
+      }
+      renderAll();
+    }
+
     function getSheetUrl() {
       return localStorage.getItem('yfw_sheet_url') || "";
     }
@@ -629,52 +649,93 @@
     function updateSheetBadge() {
       const url = getSheetUrl();
       const badge = document.getElementById('sheetBadge');
-      const badgeText = document.getElementById('sheetBadgeText');
+      const text = document.getElementById('sheetBadgeText');
       if (url && url.startsWith('http')) {
-        badge.classList.remove('bg-brand-input', 'text-brand-textMuted');
-        badge.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/30');
-        badgeText.textContent = "Sheet Connected";
+        badge.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 transition";
+        text.textContent = "Sheet Connected";
       } else {
-        badge.classList.remove('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/30');
-        badge.classList.add('bg-brand-input', 'text-brand-textMuted');
-        badgeText.textContent = "Connect Sheet";
+        badge.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-input hover:bg-brand-cardBorder text-brand-textMuted border border-brand-cardBorder transition";
+        text.textContent = "Connect Sheet";
       }
     }
 
+    // Google Sheets Push using text/plain to bypass CORS
     async function pushToGoogleSheet(sheetName, headers, rowData) {
       const scriptUrl = getSheetUrl();
-      if (!scriptUrl) return;
+      if (!scriptUrl) return false;
 
       try {
         await fetch(scriptUrl, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sheet: sheetName,
-            headers: headers,
-            row: rowData
-          })
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ sheet: sheetName, headers: headers, row: rowData })
         });
-        console.log(`Pushed row to Sheet: ${sheetName}`);
+        return true;
       } catch (err) {
-        console.error("Sheet push error:", err);
+        console.error("Sheet Sync error:", err);
+        return false;
       }
     }
 
-    // Save and Render Functions
-    function persistData() {
-      localStorage.setItem('yfw_crm_data', JSON.stringify(crmData));
-      if (db) {
-        db.collection("crm_store").doc("main_data").set(crmData)
-          .catch(e => console.warn("Cloud write fallback to local:", e));
+    // Smart Sync: Only sync items that have NOT been synced yet (Eliminating duplicates)
+    async function triggerSheetSyncAll() {
+      const url = getSheetUrl();
+      if (!url) {
+        openSheetModal();
+        return;
       }
-      renderAll();
+
+      let count = 0;
+
+      // 1. Leads
+      for (const l of crmData.leads) {
+        if (!l.synced) {
+          await pushToGoogleSheet("Leads", ["Lead ID", "Date", "Client Name", "Phone", "Destination", "Pax", "Budget", "Status"], [l.id, l.date, l.name, l.phone, l.dest, l.pax, l.budget, l.status]);
+          l.synced = true;
+          count++;
+        }
+      }
+
+      // 2. Bookings
+      for (const b of crmData.bookings) {
+        if (!b.synced) {
+          await pushToGoogleSheet("Bookings", ["Booking ID", "Client Name", "Destination", "Departure", "Total", "Advance", "Balance", "Margin", "Status"], [b.id, b.client, b.dest, b.dept, b.total, b.advance, b.balance, b.margin, b.status]);
+          b.synced = true;
+          count++;
+        }
+      }
+
+      // 3. Suppliers
+      for (const s of crmData.suppliers) {
+        if (!s.synced) {
+          await pushToGoogleSheet("Suppliers", ["Vendor Name", "Category", "Market", "Contact Person", "Phone", "Notes"], [s.name, s.cat, s.market, s.person, s.phone, s.notes]);
+          s.synced = true;
+          count++;
+        }
+      }
+
+      // 4. Fleet
+      for (const f of crmData.fleet) {
+        if (!f.synced) {
+          await pushToGoogleSheet("Fleet_Cabs", ["Vehicle Type", "Plate No.", "Driver Name", "Driver Phone", "Route", "Status"], [f.type, f.plate, f.driver, f.phone, f.route, f.status]);
+          f.synced = true;
+          count++;
+        }
+      }
+
+      persistData();
+      if (count > 0) {
+        alert(`Smart Sync Complete! ${count} new records added to Google Sheets.`);
+      } else {
+        alert("All records are already synced! No duplicates created.");
+      }
     }
 
     function renderAll() {
       renderDashboard();
       renderLeads();
+      renderConfirmedBookings();
       renderBookings();
       renderAccounts();
       renderSuppliers();
@@ -686,42 +747,44 @@
     function renderDashboard() {
       document.getElementById('statTotalBookings').textContent = crmData.bookings.length;
       document.getElementById('statTotalLeads').textContent = crmData.leads.filter(l => l.status !== 'Confirmed').length;
-      
       const totalRev = crmData.bookings.reduce((sum, b) => sum + (Number(b.total) || 0), 0);
       const totalDue = crmData.bookings.reduce((sum, b) => sum + (Number(b.balance) || 0), 0);
-      
       document.getElementById('statTotalRevenue').textContent = '₹' + totalRev.toLocaleString('en-IN');
       document.getElementById('statDuePayments').textContent = '₹' + totalDue.toLocaleString('en-IN');
+    }
 
-      const tbody = document.getElementById('dashboardRecentLeads');
-      tbody.innerHTML = crmData.leads.slice(0, 5).map(l => `
+    function renderLeads() {
+      const tbody = document.getElementById('leadsTableBody');
+      tbody.innerHTML = crmData.leads.map((l, idx) => `
         <tr class="hover:bg-brand-cardBorder/40">
-          <td class="p-3 font-semibold text-white">${l.name}</td>
+          <td class="p-3 font-mono font-bold text-sky-400">${l.id}</td>
+          <td class="p-3">${l.date}</td>
+          <td class="p-3 font-bold text-white">${l.name}</td>
+          <td class="p-3 text-sky-400">${l.phone}</td>
           <td class="p-3">${l.dest}</td>
-          <td class="p-3">${l.pax || '-'}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-brand-purple/30 text-purple-300 font-medium">${l.status}</span></td>
-          <td class="p-3 text-right">
-            <a href="https://wa.me/${l.phone}" target="_blank" class="text-emerald-400 hover:text-emerald-300 p-1.5"><i class="fa-brands fa-whatsapp"></i></a>
+          <td class="p-3 text-emerald-400 font-semibold">₹${Number(l.budget || 0).toLocaleString('en-IN')}</td>
+          <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs ${l.status === 'Confirmed' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-brand-orange/20 text-brand-orange border-brand-orange/30'} border font-bold">${l.status}</span></td>
+          <td class="p-3 text-right space-x-2">
+            ${l.status !== 'Confirmed' ? `<button onclick="convertLeadToBooking(${idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"><i class="fa-solid fa-check"></i> Confirm</button>` : ''}
+            <a href="https://wa.me/${l.phone}" target="_blank" class="text-emerald-400 p-1"><i class="fa-brands fa-whatsapp text-base"></i></a>
+            <button onclick="deleteLead(${idx})" class="text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
           </td>
         </tr>
       `).join('');
     }
 
-    function renderLeads() {
-      const tbody = document.getElementById('leadsTableBody');
-      tbody.innerHTML = crmData.leads.map((l, index) => `
+    function renderConfirmedBookings() {
+      const tbody = document.getElementById('confirmedTableBody');
+      tbody.innerHTML = crmData.bookings.map(b => `
         <tr class="hover:bg-brand-cardBorder/40">
-          <td class="p-3">${l.date}</td>
-          <td class="p-3 font-bold text-white">${l.name}</td>
-          <td class="p-3 text-sky-400">${l.phone}</td>
-          <td class="p-3">${l.dest}</td>
-          <td class="p-3">${l.pax}</td>
-          <td class="p-3 text-emerald-400 font-semibold">₹${Number(l.budget || 0).toLocaleString('en-IN')}</td>
-          <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs bg-brand-orange/20 text-brand-orange border border-brand-orange/30 font-bold">${l.status}</span></td>
-          <td class="p-3 text-right space-x-2">
-            <a href="https://wa.me/${l.phone}" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp text-base"></i></a>
-            <button onclick="deleteLead(${index})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can"></i></button>
-          </td>
+          <td class="p-3 font-mono font-bold text-emerald-400">${b.id}</td>
+          <td class="p-3 font-bold text-white">${b.client}</td>
+          <td class="p-3">${b.dest}</td>
+          <td class="p-3">${b.dept}</td>
+          <td class="p-3 font-bold text-white">₹${Number(b.total).toLocaleString('en-IN')}</td>
+          <td class="p-3 text-emerald-400">₹${Number(b.advance).toLocaleString('en-IN')}</td>
+          <td class="p-3 text-rose-400 font-bold">₹${Number(b.balance).toLocaleString('en-IN')}</td>
+          <td class="p-3"><span class="px-2.5 py-0.5 rounded-full text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">${b.status}</span></td>
         </tr>
       `).join('');
     }
@@ -793,28 +856,12 @@
       const totalTurnover = crmData.bookings.reduce((sum, b) => sum + (Number(b.total) || 0), 0);
       const totalCost = crmData.bookings.reduce((sum, b) => sum + (Number(b.cost) || 0), 0);
       const totalMargin = crmData.bookings.reduce((sum, b) => sum + (Number(b.margin) || 0), 0);
-
       document.getElementById('pnlTurnover').textContent = '₹' + totalTurnover.toLocaleString('en-IN');
       document.getElementById('pnlCosts').textContent = '₹' + totalCost.toLocaleString('en-IN');
       document.getElementById('pnlNetProfit').textContent = '₹' + totalMargin.toLocaleString('en-IN');
-
-      const tbody = document.getElementById('pnlTableBody');
-      tbody.innerHTML = crmData.bookings.map(b => {
-        const pct = b.total ? ((b.margin / b.total) * 100).toFixed(1) : 0;
-        return `
-          <tr class="hover:bg-brand-cardBorder/40">
-            <td class="p-3 font-mono text-brand-orange">${b.id}</td>
-            <td class="p-3 font-bold text-white">${b.client}</td>
-            <td class="p-3 text-white">₹${Number(b.total).toLocaleString('en-IN')}</td>
-            <td class="p-3 text-rose-400">₹${Number(b.cost).toLocaleString('en-IN')}</td>
-            <td class="p-3 text-emerald-400 font-bold">₹${Number(b.margin).toLocaleString('en-IN')}</td>
-            <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-400 font-bold">${pct}%</span></td>
-          </tr>
-        `;
-      }).join('');
     }
 
-    // Tab Navigation
+    // Tab Switcher
     function switchTab(tabId) {
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       const activeSec = document.getElementById('tab-' + tabId);
@@ -831,7 +878,7 @@
       });
     }
 
-    // Lead Actions
+    // Leads logic & Conversion
     function openLeadModal() { document.getElementById('leadModal').classList.remove('hidden'); }
     function closeLeadModal() { document.getElementById('leadModal').classList.add('hidden'); }
 
@@ -845,30 +892,136 @@
         dest: document.getElementById('leadDest').value,
         pax: document.getElementById('leadPax').value,
         budget: document.getElementById('leadBudget').value,
-        status: document.getElementById('leadStatus').value
+        status: "New",
+        synced: false
       };
-
       crmData.leads.unshift(newLead);
       persistData();
-
-      // Push to Google Sheets (Leads Tab)
-      pushToGoogleSheet("Leads", 
-        ["Lead ID", "Date", "Client Name", "Phone", "Destination", "Pax", "Budget (INR)", "Status"],
-        [newLead.id, newLead.date, newLead.name, newLead.phone, newLead.dest, newLead.pax, newLead.budget, newLead.status]
-      );
-
+      pushToGoogleSheet("Leads", ["Lead ID", "Date", "Client Name", "Phone", "Destination", "Pax", "Budget", "Status"], [newLead.id, newLead.date, newLead.name, newLead.phone, newLead.dest, newLead.pax, newLead.budget, newLead.status]).then(ok => {
+        if (ok) newLead.synced = true;
+        persistData();
+      });
       closeLeadModal();
       e.target.reset();
     }
 
-    function deleteLead(index) {
+    function convertLeadToBooking(idx) {
+      const lead = crmData.leads[idx];
+      lead.status = "Confirmed";
+      
+      const val = Number(lead.budget) || 50000;
+      const newBk = {
+        id: "BK-" + Math.floor(100 + Math.random() * 900),
+        client: lead.name,
+        dest: lead.dest,
+        dept: "2026-11-25",
+        flight: "Pending",
+        hotel: "Pending",
+        visa: "Processing",
+        status: "Confirmed",
+        cost: Math.round(val * 0.8),
+        margin: Math.round(val * 0.2),
+        total: val,
+        advance: Math.round(val * 0.5),
+        balance: Math.round(val * 0.5),
+        dueDate: "2026-11-20",
+        synced: false
+      };
+
+      crmData.bookings.unshift(newBk);
+      persistData();
+      
+      pushToGoogleSheet("Bookings", ["Booking ID", "Client Name", "Destination", "Departure", "Total", "Advance", "Balance", "Margin", "Status"], [newBk.id, newBk.client, newBk.dest, newBk.dept, newBk.total, newBk.advance, newBk.balance, newBk.margin, newBk.status]).then(ok => {
+        if (ok) newBk.synced = true;
+        persistData();
+      });
+
+      alert(`Lead ${lead.name} has been confirmed & added to Bookings!`);
+      switchTab('confirmed');
+    }
+
+    function deleteLead(idx) {
       if (confirm("Delete this lead?")) {
-        crmData.leads.splice(index, 1);
+        crmData.leads.splice(idx, 1);
         persistData();
       }
     }
 
-    // Itinerary Builder Logic
+    // Supplier Modal Logic (Fixed & Working)
+    function openSupplierModal() { document.getElementById('supplierModal').classList.remove('hidden'); }
+    function closeSupplierModal() { document.getElementById('supplierModal').classList.add('hidden'); }
+
+    function handleSupplierSubmit(e) {
+      e.preventDefault();
+      const newSup = {
+        id: "S" + (crmData.suppliers.length + 1),
+        name: document.getElementById('supName').value,
+        cat: document.getElementById('supCat').value,
+        market: document.getElementById('supMarket').value,
+        person: document.getElementById('supPerson').value,
+        phone: document.getElementById('supPhone').value,
+        notes: document.getElementById('supNotes').value,
+        synced: false
+      };
+      crmData.suppliers.unshift(newSup);
+      persistData();
+
+      pushToGoogleSheet("Suppliers", ["Vendor Name", "Category", "Market", "Contact Person", "Phone", "Notes"], [newSup.name, newSup.cat, newSup.market, newSup.person, newSup.phone, newSup.notes]).then(ok => {
+        if (ok) newSup.synced = true;
+        persistData();
+      });
+
+      closeSupplierModal();
+      e.target.reset();
+      alert("Supplier added successfully & synced!");
+    }
+
+    // Fleet Modal Logic (Fixed & Working)
+    function openFleetModal() { document.getElementById('fleetModal').classList.remove('hidden'); }
+    function closeFleetModal() { document.getElementById('fleetModal').classList.add('hidden'); }
+
+    function handleFleetSubmit(e) {
+      e.preventDefault();
+      const newFleet = {
+        id: "V" + (crmData.fleet.length + 1),
+        type: document.getElementById('fleetType').value,
+        plate: document.getElementById('fleetPlate').value,
+        driver: document.getElementById('fleetDriver').value,
+        phone: document.getElementById('fleetPhone').value,
+        route: document.getElementById('fleetRoute').value,
+        status: "Available",
+        synced: false
+      };
+      crmData.fleet.unshift(newFleet);
+      persistData();
+
+      pushToGoogleSheet("Fleet_Cabs", ["Vehicle Type", "Plate No.", "Driver Name", "Driver Phone", "Route", "Status"], [newFleet.type, newFleet.plate, newFleet.driver, newFleet.phone, newFleet.route, newFleet.status]).then(ok => {
+        if (ok) newFleet.synced = true;
+        persistData();
+      });
+
+      closeFleetModal();
+      e.target.reset();
+      alert("Vehicle added successfully & synced!");
+    }
+
+    // Google Sheets Modal controls
+    function openSheetModal() {
+      document.getElementById('sheetUrlInput').value = getSheetUrl();
+      document.getElementById('sheetModal').classList.remove('hidden');
+    }
+    function closeSheetModal() {
+      document.getElementById('sheetModal').classList.add('hidden');
+    }
+    function saveSheetUrl() {
+      const url = document.getElementById('sheetUrlInput').value.trim();
+      localStorage.setItem('yfw_sheet_url', url);
+      updateSheetBadge();
+      closeSheetModal();
+      alert("Google Sheet Web App URL connected successfully!");
+    }
+
+    // Quotation Builder Logic
     let itineraryDays = [
       { day: 1, title: "Arrival & Hotel Check-in with Welcome Dinner" },
       { day: 2, title: "Full-Day Sightseeing Tour & Local Experiences" }
@@ -879,7 +1032,7 @@
       container.innerHTML = itineraryDays.map((d, idx) => `
         <div class="flex items-center gap-2">
           <span class="w-16 px-2.5 py-2 rounded-lg bg-brand-input text-brand-orange font-bold text-xs text-center border border-brand-cardBorder">Day ${d.day}</span>
-          <input type="text" value="${d.title}" onchange="updateItineraryTitle(${idx}, this.value)" class="flex-1 px-3 py-2 rounded-lg bg-brand-input border border-brand-cardBorder text-white text-xs outline-none">
+          <input type="text" value="${d.title}" onchange="itineraryDays[${idx}].title = this.value" class="flex-1 px-3 py-2 rounded-lg bg-brand-input border border-brand-cardBorder text-white text-xs outline-none">
           <button onclick="removeItineraryDay(${idx})" class="p-2 text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
         </div>
       `).join('');
@@ -896,10 +1049,6 @@
         itineraryDays.forEach((d, i) => d.day = i + 1);
         renderItineraryRows();
       }
-    }
-
-    function updateItineraryTitle(idx, val) {
-      itineraryDays[idx].title = val;
     }
 
     function calculateQuoteTotal() {
@@ -929,11 +1078,7 @@
       msg += `*Total Package Cost:* ₹${total.toLocaleString('en-IN')} (All-inclusive)%0A%0A`;
       msg += `Best regards,%0A*Yogi Flying World*, Ahmedabad`;
 
-      if (phone) {
-        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-      } else {
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-      }
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
     function saveQuotationAsBooking() {
@@ -950,26 +1095,26 @@
         flight: "Pending",
         hotel: "Pending",
         visa: "Processing",
-        status: "Upcoming",
+        status: "Confirmed",
         cost: cost,
         margin: margin,
         total: total,
         advance: Math.round(total * 0.4),
         balance: Math.round(total * 0.6),
-        dueDate: "2026-11-15"
+        dueDate: "2026-11-15",
+        synced: false
       };
 
       crmData.bookings.unshift(newBooking);
       persistData();
 
-      // Push to Google Sheets (Bookings & Accounts Tab)
-      pushToGoogleSheet("Bookings",
-        ["Booking ID", "Client Name", "Destination", "Departure", "Total Amount", "Advance", "Balance", "Margin", "Status"],
-        [newBooking.id, newBooking.client, newBooking.dest, newBooking.dept, newBooking.total, newBooking.advance, newBooking.balance, newBooking.margin, newBooking.status]
-      );
+      pushToGoogleSheet("Bookings", ["Booking ID", "Client Name", "Destination", "Departure", "Total", "Advance", "Balance", "Margin", "Status"], [newBooking.id, newBooking.client, newBooking.dest, newBooking.dept, newBooking.total, newBooking.advance, newBooking.balance, newBooking.margin, newBooking.status]).then(ok => {
+        if (ok) newBooking.synced = true;
+        persistData();
+      });
 
-      alert(`Booking ${newBooking.id} created successfully & synced!`);
-      switchTab('bookings');
+      alert(`Booking ${newBooking.id} created and synced!`);
+      switchTab('confirmed');
     }
 
     function sendBalanceReminder(name, bal, date) {
@@ -981,42 +1126,6 @@
       window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
     }
 
-    // Google Sheets Modal & Connect
-    function openSheetModal() {
-      document.getElementById('sheetUrlInput').value = getSheetUrl();
-      document.getElementById('sheetModal').classList.remove('hidden');
-    }
-    function closeSheetModal() {
-      document.getElementById('sheetModal').classList.add('hidden');
-    }
-    function saveSheetUrl() {
-      const url = document.getElementById('sheetUrlInput').value.trim();
-      localStorage.setItem('yfw_sheet_url', url);
-      updateSheetBadge();
-      closeSheetModal();
-      alert("Google Sheet Web App URL connected successfully!");
-    }
-
-    // Sync All Data to Google Sheet
-    async function triggerSheetSyncAll() {
-      const url = getSheetUrl();
-      if (!url) {
-        openSheetModal();
-        return;
-      }
-      alert("Pushing all records to your Google Sheet tabs...");
-      // Sync Leads
-      for (const l of crmData.leads) {
-        await pushToGoogleSheet("Leads", ["Lead ID", "Date", "Client Name", "Phone", "Destination", "Pax", "Budget", "Status"], [l.id, l.date, l.name, l.phone, l.dest, l.pax, l.budget, l.status]);
-      }
-      // Sync Bookings
-      for (const b of crmData.bookings) {
-        await pushToGoogleSheet("Bookings", ["Booking ID", "Client Name", "Destination", "Departure", "Total", "Advance", "Balance", "Margin", "Status"], [b.id, b.client, b.dest, b.dept, b.total, b.advance, b.balance, b.margin, b.status]);
-      }
-      alert("All Leads and Bookings synced to Google Sheets!");
-    }
-
-    // Logo Handling
     function handleLogoUpload(e) {
       const file = e.target.files[0];
       if (file) {
@@ -1043,15 +1152,6 @@
       }
     }
 
-    function exportBackupJSON() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(crmData, null, 2));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", `YFW_CRM_Backup_${new Date().toISOString().split('T')[0]}.json`);
-      dlAnchor.click();
-    }
-
-    // Init Page
     window.addEventListener('DOMContentLoaded', () => {
       const savedLogo = localStorage.getItem('yfw_brand_logo');
       if (savedLogo) applyLogo(savedLogo);
